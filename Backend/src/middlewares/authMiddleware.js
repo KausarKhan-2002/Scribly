@@ -2,7 +2,7 @@ const { catchError } = require("../helper/catchError");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userSchema");
 
-exports.isAuthorized = async (req, res, next) => {
+exports.authMiddleware = async (req, res, next) => {
   try {
     const { token } = req.cookies;
     console.log("token:", token);
@@ -26,7 +26,7 @@ exports.isAuthorized = async (req, res, next) => {
     }
 
     // 3. Find user from decoded userId
-    const user = await User.findById(decoded.userId);
+    const user = await User.findById(decoded.userId).select("-password");
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -36,6 +36,7 @@ exports.isAuthorized = async (req, res, next) => {
 
     // 4. Attach user to request and continue
     req.user = user;
+    
     next();
   } catch (error) {
     catchError(error, res);

@@ -4,27 +4,15 @@ import validator from "validator";
 import { isValidPassword } from "../Utils/customValidator";
 
 export const useValidator = () => {
-  return (isSignup, username, fullname, email, password, confirmPassword) => {
-    // Username_________
+  return (isSignup, name, email, password, confirmPassword) => {
+    // name__________
     if (isSignup) {
-      if (!username) {
+      if (!name) {
         toast.error("Username is required");
         return;
       }
-      if (username.length < 4) {
+      if (name.length < 4) {
         toast.error("Username must be contain atleast 4 characters");
-      }
-    }
-
-    // fullname_________
-    if (isSignup) {
-      if (!fullname) {
-        toast.error("Fullname is required");
-        return;
-      }
-      if (fullname.length < 3) {
-        toast.error("Fullname must be contain atleast 3 characters");
-        return;
       }
     }
 

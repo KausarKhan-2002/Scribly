@@ -4,8 +4,11 @@ const User = require("../models/userSchema");
 const { catchError } = require("../helper/catchError");
 const { isValidPassword } = require("../helper/customValidator");
 const validator = require("validator");
-const createTokenSaveCookie = require("../config/createTokenSaveCookie");
-const { isAuthorized } = require("../middlewares/isAuthorized");
+const {
+  createTokenSaveCookie,
+  generateToken,
+} = require("../config/createTokenSaveCookie");
+const { authMiddleware } = require("../middlewares/authMiddleware");
 const router = express.Router();
 const { OAuth2Client } = require("google-auth-library");
 
@@ -15,10 +18,11 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 // Signup Route
 router.post("/signup", async (req, res) => {
   try {
-    const { username, fullname, email, password, confirmPassword } = req.body;
+    const { name, email, password, confirmPassword, adminInviteToken } =
+      req.body;
 
     // 1. Basic validation
-    if (!username || !fullname || !email || !password || !confirmPassword) {
+    if (!name || !email || !password || !confirmPassword) {
       return res
         .status(400)
         .json({ success: false, message: "All fields are required" });
@@ -49,24 +53,36 @@ router.post("/signup", async (req, res) => {
       });
     }
 
+    let role = "member";
+    if (
+      adminInviteToken &&
+      adminInviteToken === process.env.ADMIN_INVITE_TOKEN
+    ) {
+      role = "admin";
+    }
+
     // 5. Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 6. Create a new user
-    const newUser = new User({
-      username,
-      fullname,
+    // 6. Create a new user in DB
+    const user = await User.create({
+      name,
       email,
       password: hashedPassword,
+      role,
     });
-
-    // 7. Save the user to the database
-    await newUser.save();
 
     // Send success response
     res.status(201).json({
       success: true,
       message: "User created successfully",
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        token: generateToken(user._id),
+      },
     });
   } catch (error) {
     catchError(error, res);
@@ -77,6 +93,7 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log(req.body);
 
     // 1. Validate inputs
     if (!email) {
@@ -126,15 +143,13 @@ router.post("/login", async (req, res) => {
     // 4. Generate JWT and set cookie
     createTokenSaveCookie(user._id, res);
 
+    const { password: _, ...loginUser } = user._doc;
+
     // 5. Send user info (excluding password)
     res.status(200).json({
       success: true,
       message: "You are successfully logged in",
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-      },
+      user: loginUser,
     });
   } catch (err) {
     catchError(err, res);
@@ -142,7 +157,7 @@ router.post("/login", async (req, res) => {
 });
 
 // Logout Route
-router.post("/logout", isAuthorized, (req, res) => {
+router.post("/logout", authMiddleware, (req, res) => {
   // 1. Clear the cookie
   res.clearCookie("token", {
     httpOnly: true,
@@ -156,10 +171,11 @@ router.post("/logout", isAuthorized, (req, res) => {
   });
 });
 
+// Login with google Route
 router.post("/google-login", async (req, res) => {
   try {
     // 1. Extract token from cookies
-    const token = req.body.token
+    const token = req.body.token;
 
     if (!token) {
       return res.status(400).json({ error: "Token not found" });
@@ -171,7 +187,7 @@ router.post("/google-login", async (req, res) => {
       audience: process.env.GOOGLE_CLIENT_ID, // google client ID
     });
 
-    // 3. 
+    // 3.
     const payload = ticket.getPayload();
     const { name, email, picture } = payload;
 
@@ -188,7 +204,9 @@ router.post("/google-login", async (req, res) => {
 
     createTokenSaveCookie(user._id, res);
 
-    res.status(200).json({success:true, message: "Logged in successfully", user});
+    res
+      .status(200)
+      .json({ success: true, message: "Logged in successfully", user });
   } catch (error) {
     catchError(error, res);
   }

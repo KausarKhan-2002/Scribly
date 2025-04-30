@@ -5,6 +5,12 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const { authRouter } = require("./src/routes/authRoute");
+const { userRouter } = require("./src/routes/userRoute");
+const { taskRouter } = require("./src/routes/taskRoute");
+const { reportRouter } = require("./src/routes/reportRoute");
+const { profileRouter } = require("./src/routes/profileRoute");
+
+
 dotenv.config();
 const app = express();
 
@@ -13,6 +19,7 @@ app.use(
   cors({
     origin: "http://localhost:5173",
     methods: ["POST", "GET", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["content-type", "Authorization"],
     credentials: true,
   })
 );
@@ -44,3 +51,7 @@ mongoose
 
 // My routes starts here
 app.use("/auth", authRouter);
+app.use("/user", userRouter)
+app.use("/profile", profileRouter)
+app.use("/task", taskRouter)
+app.use("/reports", reportRouter)
