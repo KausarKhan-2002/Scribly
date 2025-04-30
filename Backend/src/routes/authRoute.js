@@ -7,6 +7,10 @@ const validator = require("validator");
 const createTokenSaveCookie = require("../config/createTokenSaveCookie");
 const { isAuthorized } = require("../middlewares/isAuthorized");
 const router = express.Router();
+const { OAuth2Client } = require("google-auth-library");
+
+// Initialize Google OAuth2 client with your Google Client ID
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Signup Route
 router.post("/signup", async (req, res) => {
@@ -150,6 +154,44 @@ router.post("/logout", isAuthorized, (req, res) => {
     success: true,
     message: "You are successfully logged out",
   });
+});
+
+router.post("/google-login", async (req, res) => {
+  try {
+    // 1. Extract token from cookies
+    const token = req.body.token
+
+    if (!token) {
+      return res.status(400).json({ error: "Token not found" });
+    }
+
+    // 2. Verify token with Google API
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID, // google client ID
+    });
+
+    // 3. 
+    const payload = ticket.getPayload();
+    const { name, email, picture } = payload;
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // First time Google login → create new user
+      user = await User.create({
+        email,
+        name,
+        avatar: picture,
+      });
+    }
+
+    createTokenSaveCookie(user._id, res);
+
+    res.status(200).json({success:true, message: "Logged in successfully", user});
+  } catch (error) {
+    catchError(error, res);
+  }
 });
 
 module.exports = { authRouter: router };
