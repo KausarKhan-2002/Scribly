@@ -9,7 +9,7 @@ const { userRouter } = require("./src/routes/userRoute");
 const { taskRouter } = require("./src/routes/taskRoute");
 const { reportRouter } = require("./src/routes/reportRoute");
 const { profileRouter } = require("./src/routes/profileRoute");
-
+const { dashBoardRouter } = require("./src/routes/dashboardRoute");
 
 dotenv.config();
 const app = express();
@@ -51,7 +51,8 @@ mongoose
 
 // My routes starts here
 app.use("/auth", authRouter);
-app.use("/user", userRouter)
-app.use("/profile", profileRouter)
-app.use("/task", taskRouter)
-app.use("/reports", reportRouter)
+app.use("/user", userRouter);
+app.use("/profile", profileRouter);
+app.use("/task", taskRouter);
+app.use("/dashboard", dashBoardRouter);
+app.use("/reports", reportRouter);

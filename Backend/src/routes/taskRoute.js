@@ -6,21 +6,6 @@ const Task = require("../models/taskSchema");
 const { default: mongoose } = require("mongoose");
 const router = express.Router();
 
-// Route to get dashboard data
-router.get("/data", authMiddleware, async (req, res) => {
-  try {
-  } catch (err) {
-    catchError(err, res);
-  }
-});
-
-// Route to get user dashboard data
-router.get("/user-data", authMiddleware, async (req, res) => {
-  try {
-  } catch (err) {
-    catchError(err, res);
-  }
-});
 
 // Route to get all tasks (Admin gets all, User gets only assigned)
 router.get("/all", authMiddleware, async (req, res) => {
@@ -232,7 +217,7 @@ router.put("/update/:id", authMiddleware, async (req, res) => {
     task.title = title || task.title;
     task.description = description || task.description;
     task.priority = priority || task.priority;
-    task.status = status || task.status
+    task.status = status || task.status;
     task.dueDate = dueDate || task.dueDate;
     task.toDoChecklist = toDoChecklist || task.toDoChecklist;
     task.attachments = attachments || task.attachments;
@@ -291,13 +276,70 @@ router.delete(
   }
 );
 
-// Route to update status
-router.get(
+// Route to update task status
+router.put(
   "/update-status/:id",
-  authMiddleware,
-  adminMiddleware,
+  authMiddleware, // Ensure user is authenticated
+  adminMiddleware, // Ensure user has admin privileges
   async (req, res) => {
     try {
+      const { id } = req.params;
+      const { status } = req.body;
+
+      // 1. Check if the provided task ID is valid
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid task id" });
+      }
+
+      // 2. Find the task by ID
+      const task = await Task.findById(id);
+      if (!task) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Task not found" });
+      }
+
+      // These status are only allowed
+      const allowedStatuses = ["Pending", "In Progress", "Completed"];
+
+      status = status.trim();
+
+      // 3. Validate the provided status against allowed values
+      if (!allowedStatuses.includes(status)) {
+        return res.status(400).json({
+          success: false,
+          message: `"${status}" is not a recognized task status. Allowed values are: ${taskStatus.join(
+            ", "
+          )}`,
+        });
+      }
+
+      // 4. Prevent unnecessary update if the status hasn't changed
+      if (task.status === status) {
+        return res.status(400).json({
+          success: false,
+          message: `The task is already marked as "${status}". No changes were made.`,
+        });
+      }
+
+      // 5. Update task status (or keep existing if not provided)
+      task.status = status || task.status;
+
+      // 6. If status is 'Completed', mark all checklist items as completed and set progress to 100%
+      if (task.status === "Completed") {
+        task.toDoChecklist.forEach((list) => (list.completed = true));
+        task.progress = 100;
+      }
+
+      // 7. Save the updated task
+      await task.save();
+
+      // 8. Send success response with updated task
+      res
+        .status(200)
+        .json({ success: true, message: "Status updated successfully", task });
     } catch (err) {
       catchError(err, res);
     }
@@ -305,12 +347,77 @@ router.get(
 );
 
 // Route to update task checklist
-router.get(
-  "/checklist/:id",
-  authMiddleware,
-  adminMiddleware,
+router.put(
+  "/update-checklist/:id",
+  authMiddleware, //  Ensure user is authenticated
+  adminMiddleware, //  Ensure user has admin privileges
   async (req, res) => {
     try {
+      const { id } = req.params;
+      const { toDoCheckList } = req.body;
+      const user = req.user;
+
+      // 1. Validate the provided task ID
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid Task ID" });
+      }
+
+      // 2. Find the task by ID
+      const task = await Task.findById(id);
+      if (!task) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Task not found" });
+      }
+
+      // 3. Check permission — only assigned users or admin can update
+      if (!task.assignTo.includes(user._id) && user.role !== "admin") {
+        return res.status(403).json({
+          success: false,
+          message: "You are not authorized to update the checklist",
+        });
+      }
+
+      // 4. Update checklist (ensure 'completed' is always boolean)
+      task.toDoChecklist = toDoCheckList.map((item) => ({
+        text: item.text,
+        completed: typeof item.completed === "boolean" ? item.completed : false,
+      }));
+
+      // 5. Calculate progress percentage from completed tasks
+      const completeCount = task.toDoChecklist.filter(
+        (list) => list.completed
+      ).length;
+      const totalItems = task.toDoChecklist.length;
+      task.progress =
+        totalItems > 0 ? Math.round((completeCount / totalItems) * 100) : 0;
+
+      // 6. Auto-update status based on progress
+      if (task.progress === 100) {
+        task.status = "Completed";
+      } else if (task.progress > 0) {
+        task.status = "In Progress";
+      } else {
+        task.status = "Pending";
+      }
+
+      // 7. Save updated task
+      await task.save();
+
+      // 8. Refetch with populated user details
+      const updatedTask = await Task.findById(id).populate(
+        "assignTo",
+        "name email avatar"
+      );
+
+      // 9. Return success response
+      res.status(200).json({
+        success: true,
+        message: "Checklist updated successfully",
+        task: updatedTask,
+      });
     } catch (err) {
       catchError(err, res);
     }
