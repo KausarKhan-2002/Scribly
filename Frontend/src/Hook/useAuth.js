@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 export const useAuth = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return async (form, setForm, isSignup, setIsSignup, setLoader) => {
     try {
@@ -16,7 +16,7 @@ export const useAuth = () => {
       const response = await axios.post(BASE_URL + `/auth/${endPoint}`, form, {
         withCredentials: true,
       });
-      console.log(response);
+      // console.log(response);
 
       if (isSignup) {
         toast.success("You have signed up successfully");
@@ -31,13 +31,13 @@ export const useAuth = () => {
       } else {
         !isSignup && toast.success("You have logged in successfully");
         console.log(response);
-        
-        dispatch(addUser(response.data.user))
-        navigate("/")
+
+        dispatch(addUser(response.data.user));
+        navigate("/");
       }
     } catch (err) {
-      console.log(err);
-      toast.error(err.data?.message || "Internal server error");
+      // console.log(err.response?.data?.message || "Internal server error");
+      toast.error(err.response?.data?.message || "Internal server error");
     } finally {
       setLoader(false);
     }

@@ -13,6 +13,7 @@ export const useValidator = () => {
       }
       if (name.length < 4) {
         toast.error("Username must be contain atleast 4 characters");
+        return;
       }
     }
 

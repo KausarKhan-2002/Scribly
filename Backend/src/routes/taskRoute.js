@@ -123,7 +123,7 @@ router.get("/:id", authMiddleware, async (req, res) => {
 });
 
 // Route to create a task (Admin only)
-router.post("/create", authMiddleware, adminMiddleware, async (req, res) => {
+router.post("/create", authMiddleware, async (req, res) => {
   try {
     const user = req.user;
 
