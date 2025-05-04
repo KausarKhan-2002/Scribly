@@ -141,7 +141,7 @@ router.post("/login", async (req, res) => {
     }
 
     // 4. Generate JWT and set cookie
-    createTokenSaveCookie(user._id, res);
+    const token = createTokenSaveCookie(user._id, res);
 
     const { password: _, ...loginUser } = user._doc;
 
@@ -150,6 +150,7 @@ router.post("/login", async (req, res) => {
       success: true,
       message: "You are successfully logged in",
       user: loginUser,
+      token,
     });
   } catch (err) {
     catchError(err, res);

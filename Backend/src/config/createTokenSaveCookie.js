@@ -18,6 +18,7 @@ const createTokenSaveCookie = (userId, res) => {
 
   return token;
 };
+
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SIGN, {
     expiresIn: "7d",

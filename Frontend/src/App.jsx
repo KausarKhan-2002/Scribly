@@ -1,11 +1,27 @@
-import React from "react";
+import React, { useEffect } from "react";
 import MyOutlet from "./Pages/MyOutlet";
 import { Toaster } from "react-hot-toast";
-import { useAuth0 } from "@auth0/auth0-react";
+import { useSelector } from "react-redux";
+import { ImSpinner2 } from "react-icons/im";
+import { useProfile } from "./Hook/useProfile";
+import startCustomProto from "./Utils/customProto";
 
 function App() {
+  const profile = useSelector((store) => store.user);
+  const getProfile = useProfile();
+
+  useEffect(() => {
+    getProfile();
+  }, []);
+
+  // Define own prototype
+  startCustomProto()
+
+  // console.log(profile);
+  
   return (
     <div>
+      {profile.loading && <LoadingProfile />}
       <Toaster />
       <MyOutlet />
     </div>
@@ -13,3 +29,11 @@ function App() {
 }
 
 export default App;
+
+const LoadingProfile = () => {
+  return (
+    <div className="fixed w-screen h-screen top-0 left-0 flex justify-center border items-center bg-white/50 text-black text-4xl">
+      <ImSpinner2 className="animate animate-spin" />
+    </div>
+  );
+};

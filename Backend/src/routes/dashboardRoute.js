@@ -46,6 +46,7 @@ router.get("/admin", authMiddleware, adminMiddleware, async (req, res) => {
         taskDistributionRaw.find((item) => item._id === status)?.count || 0;
       return acc;
     }, {});
+    taskDistribution["all"] = allTasks
 
     // 5. Priority level grouping using aggregation
     const taskPriorityRaw = await Task.aggregate([

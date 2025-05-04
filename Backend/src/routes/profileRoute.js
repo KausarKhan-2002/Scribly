@@ -5,6 +5,7 @@ const router = express.Router();
 const validator = require("validator");
 const User = require("../models/userSchema");
 const upload = require("../middlewares/uploadMiddleware");
+const { generateToken } = require("../config/createTokenSaveCookie");
 
 // Get profile Route
 router.get("/", authMiddleware, async (req, res) => {
@@ -20,10 +21,13 @@ router.get("/", authMiddleware, async (req, res) => {
       });
     }
 
+    const token = generateToken()
+
     res.status(200).json({
       success: true,
       message: "retrieve user information sucessfully",
       user,
+      token,
     });
   } catch (err) {
     catchError(err, res);

@@ -97,6 +97,8 @@ function Auth() {
           isSignup={isSignup}
         />
 
+        
+
         {!isSignup && <LoginWithGoogle_Github />}
 
         <SwitchLoginSignup isSignup={isSignup} setIsSignup={setIsSignup} />

@@ -89,6 +89,10 @@ router.get("/:id", authMiddleware, adminMiddleware, async (req, res) => {
   }
 });
 
+router.put("/update/:id", async(req, res) => {
+  
+})
+
 // Route to delete User
 router.delete(
   "/delete/:id",
