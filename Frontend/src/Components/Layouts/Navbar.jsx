@@ -20,8 +20,9 @@ function Navbar({ activeMenu }) {
 
       <h2 className="text-lg font-medium text-black">Expense Tracker</h2>
 
+      {/* Sidemenu for small screen */}
       {openSideMenu && (
-        <div className="fixed top-[61px] -ml-4">
+        <div className="fixed top-[61px] lg:hidden -ml-4">
           <SideMenu />
         </div>
       )}

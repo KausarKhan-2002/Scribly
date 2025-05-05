@@ -33,7 +33,7 @@ function Dashboard() {
   }, [user]);
 
   return (
-    <div>
+    <div className="bg-slate-100/30">
       <DashboardLayout activeMenu="Dashboard">
         <section className="card my-5">
           {/* Wishes with current date*/}

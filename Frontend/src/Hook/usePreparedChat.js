@@ -1,6 +1,6 @@
 export const usePreparedChat = () => {
   return (data, setPieChartData, setBarChartData) => {
-    console.log(data);
+    // console.log(data);
     
     if (!data) return;
     const taskDistribution = data?.taskDistribution || null;

@@ -3,7 +3,7 @@ import moment from "moment";
 import { motion } from "framer-motion";
 
 function TaskListTable({ tableData }) {
-  console.log(tableData);
+  // console.log(tableData);
 
   const getStatusBadgeColor = (status) => {
     switch (status) {
@@ -36,10 +36,18 @@ function TaskListTable({ tableData }) {
       <table className="w-full table-auto border-collapse border border-gray-100/60">
         <thead>
           <tr className="bg-gray-100/50 border-b border-gray-100 text-left">
-            <th className="py-3 px-4 text-gray-800 font-semibold text-sm">Name</th>
-            <th className="py-3 px-4 text-gray-800 font-semibold text-sm">Status</th>
-            <th className="py-3 px-4 text-gray-800 font-semibold text-sm">Priority</th>
-            <th className="py-3 px-4 text-gray-800 font-semibold text-sm">Created on</th>
+            <th className="py-3 px-4 text-gray-800 font-semibold text-sm">
+              Name
+            </th>
+            <th className="py-3 px-4 text-gray-800 font-semibold text-sm">
+              Status
+            </th>
+            <th className="py-3 px-4 text-gray-800 font-semibold text-sm">
+              Priority
+            </th>
+            <th className="py-3 px-4 text-gray-800 font-semibold text-sm">
+              Created on
+            </th>
           </tr>
         </thead>
         <tbody className="text-sm">
@@ -54,20 +62,26 @@ function TaskListTable({ tableData }) {
               <td className="py-3 px-4 text-gray-700">{task.title}</td>
               <td className="py-3 px-4">
                 <span
-                  className={`px-2 py-1 text-xs rounded inline-block ${getStatusBadgeColor(task.status)}`}
+                  className={`px-2 py-1 text-xs rounded inline-block ${getStatusBadgeColor(
+                    task.status
+                  )}`}
                 >
                   {task.status}
                 </span>
               </td>
               <td className="py-3 px-4">
                 <span
-                  className={`px-2 py-1 text-xs rounded inline-block ${getPriorityBadgeColor(task.priority)}`}
+                  className={`px-2 py-1 text-xs rounded inline-block ${getPriorityBadgeColor(
+                    task.priority
+                  )}`}
                 >
                   {task.priority}
                 </span>
               </td>
               <td className="py-3 px-4">
-                {task.createdAt ? moment(task.createdAt).format("Do MMM YYYY") : "N/A"}
+                {task.createdAt
+                  ? moment(task.createdAt).format("Do MMM YYYY")
+                  : "N/A"}
               </td>
             </motion.tr>
           ))}

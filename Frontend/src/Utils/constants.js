@@ -73,4 +73,4 @@ export const STATUS_DATA = [
 ];
 
 export const DEFAULT_AVATAR =
-  "https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3467.jpg";
+  "https://i.pinimg.com/736x/15/0f/a8/150fa8800b0a0d5633abc1d1c4db3d87.jpg";
