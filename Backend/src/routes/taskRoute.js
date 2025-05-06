@@ -6,7 +6,6 @@ const Task = require("../models/taskSchema");
 const { default: mongoose } = require("mongoose");
 const router = express.Router();
 
-
 // Route to get all tasks (Admin gets all, User gets only assigned)
 router.get("/all", authMiddleware, async (req, res) => {
   try {
@@ -72,8 +71,8 @@ router.get("/all", authMiddleware, async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Fetch all tasks",
-      data: {
-        tasks: tasks,
+      tasks,
+      statusSummary: {
         allTasks,
         pendingTasks,
         inProgressTasks,
@@ -123,7 +122,7 @@ router.get("/:id", authMiddleware, async (req, res) => {
 });
 
 // Route to create a task (Admin only)
-router.post("/create", authMiddleware,adminMiddleware, async (req, res) => {
+router.post("/create", authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const user = req.user;
 
@@ -144,7 +143,6 @@ router.post("/create", authMiddleware,adminMiddleware, async (req, res) => {
       attachments,
     } = req.body;
     // console.log(req.body);
-    
 
     if (!Array.isArray(assignTo)) {
       return res.status(400).json({

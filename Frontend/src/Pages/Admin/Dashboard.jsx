@@ -83,7 +83,7 @@ function Dashboard() {
           </div>
         </section>
 
-        {/* Display task with advance Pie Chart */}
+        {/* Display task with advance Pie & Bar Chart */}
         <div className="space-y-4">
           <section className="grid md:grid-cols-2 gap-5">
             {/* Task Distribution */}

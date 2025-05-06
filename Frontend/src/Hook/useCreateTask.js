@@ -15,10 +15,9 @@ export const useCreateTask = () => {
         dueDate: new Date(taskData.dueDate).toISOString(),
       };
 
-      const response = await axios.post(BASE_URL + CREATE_TASK, newTask, {
+      await axios.post(BASE_URL + CREATE_TASK, newTask, {
         withCredentials: true,
       });
-      console.log(response);
       toast.success("task created successfully");
       flowerRain();
     } catch (err) {
