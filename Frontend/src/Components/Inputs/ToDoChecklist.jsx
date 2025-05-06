@@ -9,7 +9,7 @@ function ToDoChecklist({ todoList, setTodoList }) {
   // Add new todo at top
   const handleAddOption = () => {
     if (option.trim()) {
-      setTodoList([option.trim(), ...todoList]);
+      setTodoList([{ text: option.trim(), completed: false }, ...todoList]);
       setOption("");
     }
   };
@@ -26,7 +26,7 @@ function ToDoChecklist({ todoList, setTodoList }) {
         <AnimatePresence initial={false}>
           {todoList.map((item, ind) => (
             <motion.div
-              key={item}
+              key={ind}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -37,7 +37,7 @@ function ToDoChecklist({ todoList, setTodoList }) {
                 <span className="text-xs text-gray-400 font-semibold mr-2">
                   {ind < 9 ? `0${ind + 1}` : ind + 1}
                 </span>
-                {item}
+                {item.text}
               </p>
               <button
                 className="cursor-pointer"

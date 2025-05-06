@@ -1,4 +1,3 @@
-import React from "react";
 import toast from "react-hot-toast";
 import validator from "validator";
 import { isValidPassword } from "../Utils/customValidator";
@@ -46,6 +45,41 @@ export const useValidator = () => {
         return;
       }
     }
+
+    return true;
+  };
+};
+
+export const usetaskValidator = () => {
+  return (taskData) => {
+    if (!taskData.title.trim()) {
+      toast.error("Title is required");
+      return;
+    }
+    if (!taskData.description.trim()) {
+      toast.error("Description is required");
+      return;
+    }
+    if (!taskData.priority.trim()) {
+      toast.error("Priority is required");
+      return;
+    }
+    if (!taskData.dueDate) {
+      toast.error("Due Date is required");
+      return;
+    }
+    if (taskData.assignTo.length === 0) {
+      toast.error("Task not assigned to any member");
+      return;
+    }
+    if (taskData.toDoChecklist.length === 0) {
+      toast.error("Atleast one To Do task is required");
+      return;
+    }
+    // if (taskData.attachments.length === 0) {
+    //   toast.error("Attachments is required");
+    //   return;
+    // }
 
     return true;
   };

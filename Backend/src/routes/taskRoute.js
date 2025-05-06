@@ -140,9 +140,11 @@ router.post("/create", authMiddleware,adminMiddleware, async (req, res) => {
       priority,
       dueDate,
       assignTo,
-      attachments,
       toDoChecklist,
+      attachments,
     } = req.body;
+    // console.log(req.body);
+    
 
     if (!Array.isArray(assignTo)) {
       return res.status(400).json({

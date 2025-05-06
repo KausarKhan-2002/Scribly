@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import DashboardLayout from "../../Components/Layouts/DashboardLayout";
 import { PRIORITY_DATA } from "../../Utils/constants";
 import { API_PATHS } from "../../Utils/apiPaths";
-import toast from "react-hot-toast";
 import moment from "moment";
 import { LuTrash2 } from "react-icons/lu";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -10,13 +9,16 @@ import SelectDropdown from "../../Components/Inputs/SelectDropdown";
 import SelectUsers from "../../Components/Inputs/SelectUsers";
 import ToDoChecklist from "../../Components/Inputs/ToDoChecklist";
 import AddAttachmentsInput from "../../Components/Inputs/AddAttachmentsInput";
+import { usetaskValidator } from "../../Hook/useValidator";
+import { useCreateTask } from "../../Hook/useCreateTask";
+import Spinner from "../../Shared/Spinner";
 
 function CreateTask() {
   const [taskData, setTaskData] = useState({
     title: "",
     description: "",
     priority: "Low",
-    dueDate: null,
+    dueDate: "",
     assignTo: [],
     toDoChecklist: [],
     attachments: [],
@@ -27,6 +29,8 @@ function CreateTask() {
   // console.log(location);
   const { taskId } = location.state || {};
   const navigate = useNavigate();
+  const taskValidator = usetaskValidator();
+  const createTask = useCreateTask();
 
   // Store user data when user fill the form
   const handleChange = (key, value) => {
@@ -47,9 +51,6 @@ function CreateTask() {
   };
   const [currTask, setCurrTask] = useState(null);
 
-  // Create task
-  const createTask = async () => {};
-
   // Update task
   const updateTask = async () => {};
 
@@ -59,7 +60,18 @@ function CreateTask() {
   // Delete task
   const deleteTask = async () => {};
 
-  console.log("taskData:", taskData);
+  const handleSubmit = () => {
+    console.log("taskData:", taskData);
+
+    if (!taskValidator(taskData)) return;
+
+    if (taskId) {
+      updateTask();
+      return;
+    }
+
+    createTask(taskData, setLoading);
+  };
 
   return (
     <div className="">
@@ -174,11 +186,24 @@ function CreateTask() {
 
               {/* Add attachments */}
               <section className="mt-3">
-                <label className="text-xs font-medium text-slate-600">Add Attachments</label>
+                <label className="text-xs font-medium text-slate-600">
+                  Add Attachments
+                </label>
                 <AddAttachmentsInput
                   attachments={taskData?.attachments}
                   setAttachments={(value) => handleChange("attachments", value)}
                 />
+              </section>
+
+              {/* Button to either create or update task */}
+              <section className="flex justify-end mt-7">
+                <button
+                  className="add-btn"
+                  onClick={handleSubmit}
+                  disabled={loading}
+                >
+                  {loading ? <Spinner /> : taskId ? "UPDATE TASK" : "CREATE TASK"}
+                </button>
               </section>
             </div>
           </div>
