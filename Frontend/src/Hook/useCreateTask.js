@@ -10,10 +10,18 @@ export const useCreateTask = () => {
       setLoading(true);
       const { CREATE_TASK } = API_PATHS.TASK;
       // Create new task with ISO String Date
+      console.log(taskData);
+
       const newTask = {
         ...taskData,
         dueDate: new Date(taskData.dueDate).toISOString(),
+        toDoChecklist: taskData.toDoChecklist.map((toDo) => ({
+          text: toDo,
+          completed: false,
+        })),
       };
+
+      console.log("newTask", newTask);
 
       await axios.post(BASE_URL + CREATE_TASK, newTask, {
         withCredentials: true,

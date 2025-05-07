@@ -20,8 +20,10 @@ function TaskCard({ task, assignedTo, onClick }) {
   } = task;
 
   const ref = useRef(null);
+  // Animation on scroll
   const isInView = useInView(ref, { once: true, margin: "0px 0px -100px 0px" });
 
+  // Get status tag color
   const getStatusTagColor = () => {
     switch (status) {
       case "In Progress":
@@ -33,6 +35,7 @@ function TaskCard({ task, assignedTo, onClick }) {
     }
   };
 
+  // Get priority tag color
   const getPriorityTagColor = () => {
     switch (priority) {
       case "Low":
@@ -53,6 +56,7 @@ function TaskCard({ task, assignedTo, onClick }) {
       className="bg-white rounded-xl py-4 cursor-pointer border border-gray-200/50 hover:shadow-sm"
       onClick={onClick}
     >
+      {/* Show status and priority */}
       <section className="flex items-end gap-3 px-4">
         <div
           className={`text-[11px] font-medium px-4 py-0.5 rounded ${getStatusTagColor()}`}
@@ -66,6 +70,7 @@ function TaskCard({ task, assignedTo, onClick }) {
         </div>
       </section>
 
+      {/* Show card body */}
       <section
         className={`px-4 border-l-[3px] ${
           status === "In Progress"
@@ -108,6 +113,7 @@ function TaskCard({ task, assignedTo, onClick }) {
         </div>
       </section>
 
+      {/* Show Attachments If available */}
       <section className="flex items-center justify-between mt-3 px-4">
         <AvatarGroup avatars={assignedTo || []} />
         {attachments?.length > 0 && (

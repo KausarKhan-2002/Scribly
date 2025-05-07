@@ -2,17 +2,19 @@ import React, { useState } from "react";
 import { HiOutlineTrash } from "react-icons/hi";
 import { HiMiniPlus } from "react-icons/hi2";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLocation } from "react-router-dom";
 
 function ToDoChecklist({ todoList, setTodoList }) {
   const [option, setOption] = useState("");
-
+  
   // Add new todo at top
   const handleAddOption = () => {
     if (option.trim()) {
-      setTodoList([{ text: option.trim(), completed: false }, ...todoList]);
+      setTodoList([option.trim(), ...todoList]);
       setOption("");
     }
   };
+  // console.log(todoList);
 
   const handleDeleteOption = (ind) => {
     const updatedUser = todoList.filter((_, idx) => idx !== ind);

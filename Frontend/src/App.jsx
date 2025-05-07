@@ -20,7 +20,7 @@ function App() {
   // console.log(profile);
   
   return (
-    <div className="bg-slate-100/30">
+    <div className="bg-gray-100/50">
       {profile.loading && <LoadingProfile />}
       <Toaster />
       <MyOutlet />

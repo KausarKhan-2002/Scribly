@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DashboardLayout from "../../Components/Layouts/DashboardLayout";
 import { PRIORITY_DATA } from "../../Utils/constants";
-import { API_PATHS } from "../../Utils/apiPaths";
+import { API_PATHS, BASE_URL } from "../../Utils/apiPaths";
 import moment from "moment";
 import { LuTrash2 } from "react-icons/lu";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -12,6 +12,12 @@ import AddAttachmentsInput from "../../Components/Inputs/AddAttachmentsInput";
 import { usetaskValidator } from "../../Hook/useValidator";
 import { useCreateTask } from "../../Hook/useCreateTask";
 import Spinner from "../../Shared/Spinner";
+import axios from "axios";
+import { useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import useThrottle from "../../Hook/useThrottle";
+import Modal from "../../Components/Modal";
+import DeleteAlert from "../../Components/DeleteAlert";
 
 function CreateTask() {
   const [taskData, setTaskData] = useState({
@@ -24,13 +30,14 @@ function CreateTask() {
     attachments: [],
   });
   const [loading, setLoading] = useState(false);
-  const [openDeleteAlert, setOpenAlertDelete] = useState(false);
+  const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
+  const [currTask, setCurrTask] = useState(null);
   const location = useLocation();
-  // console.log(location);
   const { taskId } = location.state || {};
   const navigate = useNavigate();
   const taskValidator = usetaskValidator();
   const createTask = useCreateTask();
+  const throttle = useThrottle();
 
   // Store user data when user fill the form
   const handleChange = (key, value) => {
@@ -49,16 +56,90 @@ function CreateTask() {
       attachments: [],
     });
   };
-  const [currTask, setCurrTask] = useState(null);
 
   // Update task
-  const updateTask = async () => {};
+  const updateTask = async (currTaskId) => {
+    try {
+      // console.log(currTaskId);
+      setLoading(true);
+
+      const newTask = {
+        ...taskData,
+        dueDate: new Date(taskData.dueDate).toISOString(),
+        toDoChecklist: taskData.toDoChecklist.map((toDo) => ({
+          text: toDo,
+          completed: false,
+        })),
+      };
+
+      const { UPDATE_TASK } = API_PATHS.TASK;
+      const response = await axios.put(
+        BASE_URL + UPDATE_TASK(currTaskId),
+        newTask,
+        {
+          withCredentials: true,
+        }
+      );
+      // console.log("Update:", response);
+      toast.success("Task updated successfully");
+    } catch (err) {
+      console.log(err);
+      toast.error(err.data?.response?.message || "Internal server error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Get task by ID
-  const getTaskByID = async () => {};
+  const getTaskByID = async (taskId) => {
+    try {
+      const { GET_TASK } = API_PATHS.TASK;
+      const response = await axios.get(BASE_URL + GET_TASK(taskId), {
+        withCredentials: true,
+      });
+      // console.log(response);
+      if (response.data.task) {
+        const taskInfo = response.data.task;
+
+        setCurrTask(taskInfo);
+
+        setTaskData((prev) => ({
+          title: taskInfo.title,
+          description: taskInfo.description,
+          priority: taskInfo.priority,
+          dueDate: taskInfo.dueDate
+            ? moment(taskInfo.dueDate).format("YYYY-MM-DD")
+            : "",
+          assignTo: taskInfo.assignTo.map((item) => item?._id) || [],
+          toDoChecklist: taskInfo.toDoChecklist.map((item) => item?.text) || [],
+          attachments: taskInfo.attachments || [],
+        }));
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   // Delete task
-  const deleteTask = async () => {};
+  const deleteTask = async () => {
+    try {
+      setLoading(true)
+      const { DELETE_TASK } = API_PATHS.TASK;
+      // console.log(currTask)
+      await axios.delete(
+        BASE_URL + DELETE_TASK(currTask._id),
+        { withCredentials: true }
+      );
+      // console.log(response);
+      navigate("/admin/tasks");
+      toast.success("Task deleted successfully")
+    } catch (err) {
+      console.log(err.message);
+    } finally {
+      setOpenDeleteAlert(false);
+      setLoading(false)
+    }
+  };
 
   const handleSubmit = () => {
     console.log("taskData:", taskData);
@@ -66,12 +147,19 @@ function CreateTask() {
     if (!taskValidator(taskData)) return;
 
     if (taskId) {
-      updateTask();
+      throttle(() => updateTask(currTask._id), 2000);
       return;
     }
 
-    createTask(taskData, setLoading);
+    throttle(() => createTask(taskData, setLoading), 1000);
   };
+
+  useEffect(() => {
+    // Get task by ID and set to taskData
+    if (taskId) {
+      getTaskByID(taskId);
+    }
+  }, [taskId]);
 
   return (
     <div className="">
@@ -87,11 +175,11 @@ function CreateTask() {
                   {taskId ? "Update Task" : "Create Task"}
                 </h2>
 
-                {/* .... */}
+                {/* Button to delete task */}
                 {taskId && (
                   <button
                     className="flex items-center gap-1.5 text-[13px] font-medium text-rose-500 bg-rose-50 rounded px-2 py-1 border border-rose-100  cursr-pointer"
-                    onClick={() => setOpenAlertDelete(true)}
+                    onClick={() => setOpenDeleteAlert(true)}
                   >
                     <LuTrash2 className="text-base" /> Delete
                   </button>
@@ -202,12 +290,33 @@ function CreateTask() {
                   onClick={handleSubmit}
                   disabled={loading}
                 >
-                  {loading ? <Spinner /> : taskId ? "UPDATE TASK" : "CREATE TASK"}
+                  {loading ? (
+                    <Spinner />
+                  ) : taskId ? (
+                    "UPDATE TASK"
+                  ) : (
+                    "CREATE TASK"
+                  )}
                 </button>
               </section>
             </div>
           </div>
         </div>
+
+        {/* Delete alert Modal */}
+
+        <Modal
+          isOpen={openDeleteAlert}
+          onClose={() => setOpenDeleteAlert(false)}
+          title="Delete Task"
+        >
+          <DeleteAlert
+            content="Are you sure you want to delete this task ?"
+            onDelete={() => deleteTask()}
+            onClose={() => setOpenDeleteAlert(false)}
+            onLoading={loading}
+          />
+        </Modal>
       </DashboardLayout>
     </div>
   );

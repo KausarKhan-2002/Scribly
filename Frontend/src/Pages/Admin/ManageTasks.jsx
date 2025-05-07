@@ -6,15 +6,18 @@ import { API_PATHS, BASE_URL } from "../../Utils/apiPaths";
 import { LuFileSpreadsheet } from "react-icons/lu";
 import TaskStatusTabs from "../../Components/TaskStatusTabs";
 import TaskCard from "../../Components/Cards/TaskCard";
+import { useDispatch, useSelector } from "react-redux";
+import { replaceTask } from "../../Store/tasksSlice";
 
 function ManageTasks() {
   const [allTasks, setAllTasks] = useState([]);
   const [tabs, setTabs] = useState([]);
   const [filterTasks, setFilterTasks] = useState([]);
-  const [activeTab, setActiveTab] = useState("All")
+  const [activeTab, setActiveTab] = useState("All");
+  const dispatch = useDispatch();
 
   const navigate = useNavigate();
-  const totalTasks = filterTasks.length ? filterTasks : allTasks
+  const totalTasks = filterTasks.length ? filterTasks : allTasks;
 
   const getAllTasks = async () => {
     try {
@@ -24,8 +27,9 @@ function ManageTasks() {
       const response = await axios.get(BASE_URL + GET_TASKS, {
         withCredentials: true,
       });
-      console.log(response);
+      // console.log(response);
       setAllTasks(response.data?.tasks || []);
+      dispatch(replaceTask(response.data?.tasks || []));
 
       const statusSummary = response.data?.statusSummary || {};
 
@@ -44,6 +48,7 @@ function ManageTasks() {
 
   // console.log(allTasks);
 
+  // Set useLocation state with current taskId when user click on card
   const handleClick = (taskData) => {
     navigate(`/admin/create-task`, { state: { taskId: taskData._id } });
     console.log(taskData);
@@ -54,7 +59,7 @@ function ManageTasks() {
   useEffect(() => {
     getAllTasks(setFilterTasks);
   }, [setFilterTasks]);
-  
+
   // console.log(allTasks);
 
   return (

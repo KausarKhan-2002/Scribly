@@ -4,6 +4,7 @@ const { adminMiddleware } = require("../middlewares/adminMiddleware");
 const { catchError } = require("../helper/catchError");
 const Task = require("../models/taskSchema");
 const { default: mongoose } = require("mongoose");
+const { allowedStatuses } = require("../helper/constant");
 const router = express.Router();
 
 // Route to get all tasks (Admin gets all, User gets only assigned)
@@ -99,12 +100,12 @@ router.get("/:id", authMiddleware, async (req, res) => {
 
     // 2. Find a task where the user with given ID is the creator
     // Also populate assigned user's basic info (name, email, avatar)
-    const task = await Task.findOne({ createdBy: id }).populate(
+    const task = await Task.findById(id).populate(
       "assignTo",
       "name email avatar"
     );
 
-    // 3. If no task found for that creator, return error
+    // 3. If no task found for creator, return error
     if (!task) {
       return res
         .status(400)
@@ -187,6 +188,7 @@ router.put("/update/:id", authMiddleware, async (req, res) => {
       assignTo,
       attachments,
     } = req.body;
+    console.log(id);
 
     // 1. Check if the provided ID is a valid MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -223,6 +225,7 @@ router.put("/update/:id", authMiddleware, async (req, res) => {
     task.attachments = attachments || task.attachments;
     task.assignTo = assignTo || task.assignTo;
 
+
     // 5. Save the updated task to the database
     const updatedTask = await task.save();
 
@@ -253,6 +256,7 @@ router.delete(
           message: "Invalid task ID format",
         });
       }
+      console.log("Delete Id: ", id);
 
       // 2. Find the task by ID
       const task = await Task.findById(id);
@@ -266,7 +270,7 @@ router.delete(
       // 3. Delete task
       await task.deleteOne();
 
-      res.status(404).json({
+      res.status(200).json({
         success: true,
         message: "Task deleted successfully",
       });
@@ -284,7 +288,7 @@ router.put(
   async (req, res) => {
     try {
       const { id } = req.params;
-      const { status } = req.body;
+      let { status } = req.body;
 
       // 1. Check if the provided task ID is valid
       if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -300,9 +304,6 @@ router.put(
           .status(400)
           .json({ success: false, message: "Task not found" });
       }
-
-      // These status are only allowed
-      const allowedStatuses = ["Pending", "In Progress", "Completed"];
 
       status = status.trim();
 
