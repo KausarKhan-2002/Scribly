@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import moment from "moment";
 import InfoCard from "../../Components/Cards/InfoCard";
 import { IoMdCard } from "react-icons/io";
-import { addThousandsSeprator } from "../../Utils/helper";
+import { addThousandsSeprator, getGreeting } from "../../Utils/helper";
 import { GoArrowRight } from "react-icons/go";
 import TaskListTable from "../../Components/TaskListTable";
 import CustomPieChart from "../../Components/Charts/CustomPieChart";
@@ -40,7 +40,7 @@ function Dashboard() {
           <div>
             <div className="col-span-3">
               <h2 className="text-xl md:text-2xl">
-                Good Morning! {user?.name?.capitalize()}
+                {getGreeting()} {user?.name?.capitalize()}
               </h2>
               <p className="text-xs md:text-[13px] text-gray-400 mt-1.5">
                 {moment().format("dddd Do MMM YYYY")}

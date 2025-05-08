@@ -18,6 +18,7 @@ function TaskCard({ task, assignedTo, onClick }) {
     completedToDoCount,
     toDoChecklist,
   } = task;
+  
 
   const ref = useRef(null);
   // Animation on scroll

@@ -351,12 +351,14 @@ router.put(
 router.put(
   "/update-checklist/:id",
   authMiddleware, //  Ensure user is authenticated
-  adminMiddleware, //  Ensure user has admin privileges
+  // adminMiddleware, //  Ensure user has admin privileges
   async (req, res) => {
     try {
       const { id } = req.params;
-      const { toDoCheckList } = req.body;
+      const { toDoChecklist } = req.body;
       const user = req.user;
+      // console.log(toDoChecklist);
+      
 
       // 1. Validate the provided task ID
       if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -382,7 +384,7 @@ router.put(
       }
 
       // 4. Update checklist (ensure 'completed' is always boolean)
-      task.toDoChecklist = toDoCheckList.map((item) => ({
+      task.toDoChecklist = toDoChecklist.map((item) => ({
         text: item.text,
         completed: typeof item.completed === "boolean" ? item.completed : false,
       }));

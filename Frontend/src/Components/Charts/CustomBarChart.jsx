@@ -10,6 +10,8 @@ import {
 } from "recharts";
 
 function CustomBarChart({ data }) {
+  // console.log("bar:", data);
+  
   const getBarColor = (entry) => {
     switch (entry?.priority) {
       case "Low":

@@ -46,7 +46,7 @@ router.get("/admin", authMiddleware, adminMiddleware, async (req, res) => {
         taskDistributionRaw.find((item) => item._id === status)?.count || 0;
       return acc;
     }, {});
-    taskDistribution["all"] = allTasks
+    taskDistribution["all"] = allTasks;
 
     // 5. Priority level grouping using aggregation
     const taskPriorityRaw = await Task.aggregate([
@@ -158,7 +158,7 @@ router.get("/user", authMiddleware, async (req, res) => {
     ]);
 
     // 12. Generate a normalized priority level object (note: `allowedRoles` likely should be `allowedPriorities`)
-    const priorityLevels = allowedPriorities.reduce((acc, priority) => {
+    const taskPriorityLevels = allowedPriorities.reduce((acc, priority) => {
       acc[priority] =
         priorityLevelRaw.find((item) => item._id === priority)?.count || 0;
       return acc;
@@ -185,7 +185,7 @@ router.get("/user", authMiddleware, async (req, res) => {
         taskDistributionRaw,
         taskDistribution,
         priorityLevelRaw,
-        priorityLevels,
+        taskPriorityLevels,
       },
       recentTasks,
     });

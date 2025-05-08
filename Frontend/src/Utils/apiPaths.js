@@ -30,7 +30,7 @@ export const API_PATHS = {
   },
   DASHBOARD: {
     GET_ADMIN_DASHBOARD: "/dashboard/admin", // Admin dashboard data summary (requires JWT + admin role)
-    GET_USER_DASHBOARD: "dashboard/user", // Logged-in user's dashboard summary (requires JWT)
+    GET_USER_DASHBOARD: "/dashboard/user", // Logged-in user's dashboard summary (requires JWT)
   },
   REPORTS: {
     EXPORT_TASKS: "/reports/export/tasks", // Admin: Export all tasks to Excel (requires JWT + admin role)

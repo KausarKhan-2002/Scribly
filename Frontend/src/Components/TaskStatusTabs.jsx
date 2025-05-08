@@ -16,6 +16,8 @@ function TaskStatusTabs({
     }
     const filterByStatus = allTasks.filter((task) => task.status === label);
     setFilterTasks(filterByStatus);
+    // console.log(filterByStatus);
+    
   };
   // console.log("tabs:", tabs);
 

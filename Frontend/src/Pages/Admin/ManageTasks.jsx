@@ -6,8 +6,9 @@ import { API_PATHS, BASE_URL } from "../../Utils/apiPaths";
 import { LuFileSpreadsheet } from "react-icons/lu";
 import TaskStatusTabs from "../../Components/TaskStatusTabs";
 import TaskCard from "../../Components/Cards/TaskCard";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { replaceTask } from "../../Store/tasksSlice";
+import { useDownloadReport } from "../../Hook/useDownloadReport";
 
 function ManageTasks() {
   const [allTasks, setAllTasks] = useState([]);
@@ -15,8 +16,9 @@ function ManageTasks() {
   const [filterTasks, setFilterTasks] = useState([]);
   const [activeTab, setActiveTab] = useState("All");
   const dispatch = useDispatch();
-
   const navigate = useNavigate();
+  const downloadReport = useDownloadReport();
+
   const totalTasks = filterTasks.length ? filterTasks : allTasks;
 
   const getAllTasks = async () => {
@@ -54,8 +56,6 @@ function ManageTasks() {
     console.log(taskData);
   };
 
-  const handleDownloadReport = () => {};
-
   useEffect(() => {
     getAllTasks(setFilterTasks);
   }, [setFilterTasks]);
@@ -70,9 +70,10 @@ function ManageTasks() {
           {/* Manage Task header */}
           <section className="flex items-center justify-between gap-3">
             <h2 className="text-xl font-medium">My Tasks</h2>
+            {/* For small screen */}
             <button
               className="flex lg:hidden download-btn"
-              onClick={handleDownloadReport}
+              onClick={() => downloadReport(API_PATHS.REPORTS.EXPORT_TASKS, "Task_information.xlsx")}
             >
               <LuFileSpreadsheet className="text-lg" /> Download Report
             </button>
@@ -89,9 +90,15 @@ function ManageTasks() {
                 setFilterTasks={setFilterTasks}
               />
 
+              {/* For large screen */}
               <button
                 className="hidden lg:flex download-btn"
-                onClick={handleDownloadReport}
+                onClick={() =>
+                  downloadReport(
+                    API_PATHS.REPORTS.EXPORT_TASKS,
+                    "Task_information.xlsx"
+                  )
+                }
               >
                 <LuFileSpreadsheet className="text-lg" /> Download Report
               </button>
