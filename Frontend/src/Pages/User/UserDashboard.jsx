@@ -22,7 +22,7 @@ function UserDashboard() {
   const dashboard = useDashboardData();
   const { user } = useSelector((store) => store.user);
 
-  console.log(dashboardData)
+  // console.log(dashboardData)
 
   const onSeeMore = () => navigate("/admin/tasks");
 

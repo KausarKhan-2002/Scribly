@@ -7,14 +7,15 @@ function DashboardLayout({ children, activeMenu }) {
 
   return (
     <div>
+      {/* For small screen */}
       <Navbar activeMenu={activeMenu} />
 
       {profile.user && (
         <div className="flex">
-        {/* Sidemenu for large screen */}
+          {/* Sidemenu for large screen */}
           <div className="hidden lg:block">
             <SideMenu activeMenu={activeMenu} />
-          </div>    
+          </div>
 
           {/* Dashboard layout children */}
           <div className="grow mx-5">{children}</div>

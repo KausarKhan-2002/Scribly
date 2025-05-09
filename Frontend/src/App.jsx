@@ -15,10 +15,8 @@ function App() {
   }, []);
 
   // Define own prototype
-  startCustomProto()
+  startCustomProto();
 
-  // console.log(profile);
-  
   return (
     <div className="bg-gray-100/50">
       {profile.loading && <LoadingProfile />}

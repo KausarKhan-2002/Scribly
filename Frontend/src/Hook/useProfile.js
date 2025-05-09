@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { addUser, setLoading } from "../Store/userSlice";
 import { API_PATHS, BASE_URL } from "../Utils/apiPaths";
 import axios from "axios";
@@ -7,20 +7,15 @@ import axios from "axios";
 export const useProfile = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { pathname } = useLocation();
-  const protectRoute = ["/admin/dashboard", "/user/dashboard"];
   const { GET_PROFILE } = API_PATHS.PROFILE;
 
   return async () => {
     const accessToken = localStorage.getItem("auth_token") || undefined;
+    console.log(accessToken);
 
-    if (!accessToken) {
-      console.log("chl");
-      if (protectRoute.includes(pathname)) {
-        navigate("/");
-      }
-      return;
-    }
+    // If no token available in local storage
+    if (!accessToken) return navigate("/home");
+
     try {
       dispatch(setLoading(true));
       const response = await axios.get(BASE_URL + GET_PROFILE, {
@@ -29,10 +24,7 @@ export const useProfile = () => {
       //   console.log(response);
       const user = response.data.user;
       dispatch(addUser(user));
-
-      // if (user.role === "admin") {
-      //   navigate("/admin/dashboard");
-      // } else navigate("/user/dashboard");
+      console.log(user);
 
       if (!localStorage.getItem("auth_token")) {
         localStorage.setItem("auth_token", response.data.token);

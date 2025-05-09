@@ -12,6 +12,7 @@ function MyTasks() {
   const [allTasks, setAllTasks] = useState([]);
   const [tabs, setTabs] = useState([]);
   const [filterTasks, setFilterTasks] = useState([]);
+  const [isData, setIsData] = useState(false);
   const [activeTab, setActiveTab] = useState("All");
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -29,6 +30,7 @@ function MyTasks() {
       });
       // console.log(response);
       setAllTasks(response.data?.tasks || []);
+      setIsData(response.data?.tasks ? true : false);
       setFilterTasks(response.data?.tasks || []);
       dispatch(replaceTask(response.data?.tasks || []));
 
@@ -61,7 +63,8 @@ function MyTasks() {
   // console.log(allTasks);
   // console.log("filterTasks:", filterTasks);
 
-  if (allTasks.length === 0) return
+  // if (allTasks.length === 0) return
+  console.log(tabs, activeTab);
 
   return (
     <DashboardLayout activeMenu="Manage Tasks">
@@ -89,7 +92,7 @@ function MyTasks() {
 
         {/* Task card */}
         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-3">
-          {filterTasks.length ? (
+          {filterTasks.length > 0 &&
             filterTasks.map((task) => (
               <TaskCard
                 key={task._id}
@@ -97,9 +100,10 @@ function MyTasks() {
                 assignedTo={task.assignTo?.map((item) => item.avatar)}
                 onClick={() => handleClick(task._id)}
               />
-            ))
-          ) : (
-            <h2 className="font-mono font-semibold text-center mt-3 text-slate-500">
+            ))}
+
+          {isData && filterTasks.length === 0 && (
+            <h2 className="fixed top-50 left-[25%] lg:left-[50%] font-mono font-semibold text-center mt-3 text-slate-500">
               No task found for {activeTab}
             </h2>
           )}

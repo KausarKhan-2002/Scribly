@@ -17,6 +17,7 @@ function MyOutlet() {
     <Routes>
       {/* *********** Public routes ************/}
       <Route path="/auth" element={<Auth />} />
+      <Route path="/home" element={<Home />} />
 
       {/************ Admin Routes ************/}
       <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
@@ -38,18 +39,13 @@ function MyOutlet() {
   );
 }
 
-
 function Root() {
   const profile = useSelector((store) => store.user);
-  console.log(profile);
-
-  if (!profile.user) return
-
-  if (profile.loading) return <Outlet />;
-
-  // if (!profile.user) return <Navigate to="/auth" />;
+  // console.log(profile);
 
   if (profile.user) {
+    console.log("Profile");
+
     return profile.user.role === "admin" ? (
       <Navigate to="/admin/dashboard" />
     ) : (
@@ -57,6 +53,10 @@ function Root() {
     );
   }
 
+  if (profile.loading) {
+    console.log("outlet");
+    return <Outlet />;
+  }
 }
 
 export default MyOutlet;

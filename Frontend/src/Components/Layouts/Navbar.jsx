@@ -1,6 +1,7 @@
 import { HiOutlineX, HiOutlineMenu } from "react-icons/hi";
 import SideMenu from "./SideMenu";
 import { useState } from "react";
+import Logo from "../../Shared/Logo";
 
 function Navbar({ activeMenu }) {
   const [openSideMenu, setOpenSideMenu] = useState(false);
@@ -18,7 +19,7 @@ function Navbar({ activeMenu }) {
         )}
       </button>
 
-      <h2 className="text-lg font-medium text-black">Expense Tracker</h2>
+      <Logo />
 
       {/* Sidemenu for small screen */}
       {openSideMenu && (

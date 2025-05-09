@@ -33,12 +33,13 @@ function SideMenu() {
   };
 
   const isActive = (path) => location.pathname === path;
+  
 
   return (
     <motion.aside
-      initial={{ x: -100, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      transition={{ type: "spring", stiffness: 80, damping: 15 }}
+      // initial={{ x: -100, opacity: 0 }}
+      // animate={{ x: 0, opacity: 1 }}
+      // transition={{ type: "spring", stiffness: 80, damping: 15 }}
       className="w-64  h-[calc(100vh-62px)] bg-white border-r border-gray-200 sticky top-[61px] z-20 shadow-sm"
     >
       {/* Profile */}
