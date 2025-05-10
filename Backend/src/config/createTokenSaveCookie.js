@@ -10,7 +10,7 @@ const createTokenSaveCookie = (userId, res) => {
   const isProduction = process.env.NODE_ENV === "production";
 
   res.cookie("token", token, {
-    httpOnly: true,
+    httpOnly: process.env.HTTP_ONLY,
     secure: isProduction, // Only send over HTTPS in production
     sameSite: isProduction ? "None" : "Lax", // Better CSRF protection in production
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
