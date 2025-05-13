@@ -1,8 +1,9 @@
 // Base URL of your backend server
-const isLocal = true;
+const isLocal = false;
 export const BASE_URL = isLocal
   ? "http://localhost:7000"
   : "https://scribly-backend.onrender.com";
+  
 
 export const API_PATHS = {
   AUTH: {
