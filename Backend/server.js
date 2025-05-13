@@ -18,10 +18,22 @@ const app = express();
 
 cloudinaryConfig();
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "https://scribly-azure.vercel.app",
+];
+
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true)
+      }
+
+      callback(new Error("Not allowed by cors"))
+    },
     methods: ["POST", "GET", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["content-type", "Authorization"],
     credentials: true,
