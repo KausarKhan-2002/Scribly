@@ -51,7 +51,7 @@ function Navbar() {
 
   return (
     <motion.header
-      className="fixed top-0 left-0 w-full z-50 bg-white border-b border-slate-100 py-4 px-6 md:px-20 flex justify-between items-center shadow-sm"
+      className="fixed top-0 left-0 w-full z-40 bg-white border-b border-slate-100 py-4 px-6 md:px-20 flex justify-between items-center shadow-sm"
       initial={{ y: 0 }}
       animate={{ y: showNavbar ? 0 : -100 }}
       transition={{ duration: 0.4, ease: "easeInOut" }}

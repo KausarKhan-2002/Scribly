@@ -9,6 +9,7 @@ import TaskCard from "../../Components/Cards/TaskCard";
 import { useDispatch } from "react-redux";
 import { replaceTask } from "../../Store/tasksSlice";
 import { useDownloadReport } from "../../Hook/useDownloadReport";
+import { DEFAULT_AVATAR } from "../../Utils/constants";
 
 function ManageTasks() {
   const [allTasks, setAllTasks] = useState([]);
@@ -73,7 +74,12 @@ function ManageTasks() {
             {/* For small screen */}
             <button
               className="flex lg:hidden download-btn"
-              onClick={() => downloadReport(API_PATHS.REPORTS.EXPORT_TASKS, "Task_information.xlsx")}
+              onClick={() =>
+                downloadReport(
+                  API_PATHS.REPORTS.EXPORT_TASKS,
+                  "Task_information.xlsx"
+                )
+              }
             >
               <LuFileSpreadsheet className="text-lg" /> Download Report
             </button>
@@ -112,7 +118,9 @@ function ManageTasks() {
             <TaskCard
               key={task._id}
               task={task}
-              assignedTo={task.assignTo?.map((item) => item.avatar)}
+              assignedTo={task.assignTo?.map(
+                (item) => item.avatar?.cloudinaryUrl || DEFAULT_AVATAR
+              )}
               onClick={() => handleClick(task)}
             />
           ))}

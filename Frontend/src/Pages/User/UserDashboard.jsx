@@ -24,7 +24,7 @@ function UserDashboard() {
 
   // console.log(dashboardData)
 
-  const onSeeMore = () => navigate("/admin/tasks");
+  const onSeeMore = () => navigate("/user/tasks");
 
 
 

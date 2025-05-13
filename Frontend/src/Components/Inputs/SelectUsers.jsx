@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAllUsers } from "../../Hook/useAllUsers";
-import {  LuUsers } from "react-icons/lu";
+import { LuUsers } from "react-icons/lu";
 import Modal from "../Modal";
 import { DEFAULT_AVATAR } from "../../Utils/constants";
 import AvatarGroup from "../AvatarGroup";
@@ -31,7 +31,7 @@ function SelectUsers({ selectedUsers, setSelectedUsers, value }) {
   // Get all users which has avatar
   const selecteUserAvatars = allUsers
     .filter((user) => selectedUsers.includes(user._id))
-    .map((user) => user.avatar);
+    .map((user) => user.avatar?.cloudinaryUrl || DEFAULT_AVATAR);
 
   useEffect(() => {
     users(setAllUsers);
@@ -77,7 +77,7 @@ function SelectUsers({ selectedUsers, setSelectedUsers, value }) {
               className="flex items-center gap-4 border-b border-gray-200 py-2"
             >
               <img
-                src={user.avatar || DEFAULT_AVATAR}
+                src={user.avatar?.cloudinaryUrl || DEFAULT_AVATAR}
                 alt={user.name}
                 className="bg-gray-200 w-10 h-10 rounded-full object-cover"
               />

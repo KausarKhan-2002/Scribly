@@ -11,7 +11,7 @@ export const useProfile = () => {
 
   return async () => {
     const accessToken = localStorage.getItem("auth_token") || undefined;
-    console.log(accessToken);
+    // console.log(accessToken);
 
     // If no token available in local storage
     if (!accessToken) return navigate("/home");

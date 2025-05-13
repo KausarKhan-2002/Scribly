@@ -44,8 +44,6 @@ function Root() {
   // console.log(profile);
 
   if (profile.user) {
-    console.log("Profile");
-
     return profile.user.role === "admin" ? (
       <Navigate to="/admin/dashboard" />
     ) : (
@@ -54,7 +52,6 @@ function Root() {
   }
 
   if (profile.loading) {
-    console.log("outlet");
     return <Outlet />;
   }
 }

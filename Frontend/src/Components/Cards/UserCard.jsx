@@ -10,7 +10,7 @@ function UserCard({ userInfo }) {
       <section className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <img
-            src={avatar || DEFAULT_AVATAR}
+            src={avatar?.cloudinaryUrl || DEFAULT_AVATAR}
             alt="Avatar"
             className="w-12 h-12 rounded-full border-white object-cover"
           />

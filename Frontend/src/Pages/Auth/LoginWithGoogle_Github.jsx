@@ -1,8 +1,12 @@
 import {motion} from "framer-motion"
 import { FaGithub, FaGoogle } from "react-icons/fa";
+import toast from "react-hot-toast"
 
 
 function LoginWithGoogle_Github() {
+  const loginWithGoogle_github = () => {
+    toast.error("Under process")
+  }
   return (
     <motion.div
       className="flex flex-col items-center gap-3 mt-4"
@@ -23,6 +27,7 @@ function LoginWithGoogle_Github() {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
+          onClick={loginWithGoogle_github}
           className="bg-slate-700 p-2 rounded-full text-white cursor-pointer"
         >
           <FaGithub />
@@ -32,6 +37,7 @@ function LoginWithGoogle_Github() {
           // onClick={() => googleLogin()}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
+          onClick={loginWithGoogle_github}
           className="bg-blue-700 p-2 rounded-full text-white cursor-pointer"
         >
           <FaGoogle />

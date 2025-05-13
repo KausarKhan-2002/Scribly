@@ -7,6 +7,7 @@ import TaskStatusTabs from "../../Components/TaskStatusTabs";
 import TaskCard from "../../Components/Cards/TaskCard";
 import { useDispatch } from "react-redux";
 import { replaceTask } from "../../Store/tasksSlice";
+import { DEFAULT_AVATAR } from "../../Utils/constants";
 
 function MyTasks() {
   const [allTasks, setAllTasks] = useState([]);
@@ -97,7 +98,7 @@ function MyTasks() {
               <TaskCard
                 key={task._id}
                 task={task}
-                assignedTo={task.assignTo?.map((item) => item.avatar)}
+                assignedTo={task.assignTo?.map((item) => item.avatar?.cloudinaryUrl || DEFAULT_AVATAR)}
                 onClick={() => handleClick(task._id)}
               />
             ))}

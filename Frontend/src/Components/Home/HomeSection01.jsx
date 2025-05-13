@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 function HomeSection01() {
   return (
-    <div className="min-h-[calc(100vh-65px)] flex justify-center items-center px-6 md:px-10 lg:px-20 relative overflow-hidden">
+    <div className="mt-17 py-20 min-h-[calc(100vh-65px)] flex justify-center items-center px-6 md:px-10 lg:px-20 relative overflow-hidden">
       <section className="w-full md:w-[90%] lg:w-full lg:flex-row flex flex-col-reverse items-center justify-center gap-10 z-10">
         {/* Text Content */}
         <motion.div

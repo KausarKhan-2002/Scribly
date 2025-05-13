@@ -6,6 +6,7 @@ import DashboardLayout from "../../Components/Layouts/DashboardLayout";
 import moment from "moment";
 import AvatarGroup from "../../Components/AvatarGroup";
 import { LuSquareArrowOutUpRight } from "react-icons/lu";
+import { DEFAULT_AVATAR } from "../../Utils/constants";
 
 function ViewTaskDetails() {
   const { id } = useParams();
@@ -140,7 +141,11 @@ function ViewTaskDetails() {
                 <label className="text-xs font-medium">Assigned To </label>
 
                 <AvatarGroup
-                  avatars={task?.assignTo?.map((item) => item.avatar) || []}
+                  avatars={
+                    task?.assignTo?.map(
+                      (item) => item.avatar?.cloudinaryUrl || DEFAULT_AVATAR
+                    ) || []
+                  }
                   maxVisible={5}
                 />
               </div>

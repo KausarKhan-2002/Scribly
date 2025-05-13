@@ -4,8 +4,9 @@ const { catchError } = require("../helper/catchError");
 const router = express.Router();
 const validator = require("validator");
 const User = require("../models/userSchema");
-const upload = require("../middlewares/uploadMiddleware");
 const { generateToken } = require("../config/createTokenSaveCookie");
+const cloudinary = require("cloudinary").v2;
+require("dotenv").config();
 
 // Get profile Route
 router.get("/", authMiddleware, async (req, res) => {
@@ -21,7 +22,7 @@ router.get("/", authMiddleware, async (req, res) => {
       });
     }
 
-    const token = generateToken()
+    const token = generateToken();
 
     res.status(200).json({
       success: true,
@@ -100,22 +101,46 @@ router.put("/update", authMiddleware, async (req, res) => {
   }
 });
 
-
-router.post("/upload-image", upload.single("image"), (req, res) => {
+router.put("/upload-image", authMiddleware, async (req, res) => {
   try {
-    // File is now available in req.file
-    if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: "No file uploaded",
-      });
+    const user = req.user;
+    const { cloudinaryUrl, public_id } = req.body;
+
+    if (!validator.isURL(cloudinaryUrl) || !public_id) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid URL or public_id" });
     }
 
-    const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${
-      req.file.filename
-    }`;
+    const existingUser = await User.findById(user._id);
+    if (!existingUser) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
 
-    res.status(200).json({ success: true, message: "upload image", imageUrl });
+    // If user already has an avatar, delete it from Cloudinary
+    if (existingUser.avatar?.public_id) {
+      console.log("public_id:", existingUser.avatar?.public_id);
+
+      // await cloudinary.uploader.destroy(existingUser.avatar?.public_id);
+      // console.log("deleted previous img");
+
+      cloudinary.uploader
+        .destroy(existingUser.avatar.public_id)
+        .then((res) => console.log("Deleted", res))
+        .catch((err) => console.error("Failed", err));
+    }
+
+    // Update user with new avatar
+    existingUser.avatar = { cloudinaryUrl, public_id };
+    await existingUser.save();
+
+    res.json({
+      success: true,
+      message: "Avatar updated successfully",
+      user: existingUser,
+    });
   } catch (err) {
     catchError(err, res);
   }

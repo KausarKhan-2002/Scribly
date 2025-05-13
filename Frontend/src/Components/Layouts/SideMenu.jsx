@@ -2,18 +2,27 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useLogout } from "../../Hook/useLogout";
+import { GoPlus } from "react-icons/go";
 import {
   DEFAULT_AVATAR,
   SIDE_MENU_DATA,
   SIDE_MENU_USER_DATA,
 } from "../../Utils/constants";
 import { motion } from "framer-motion";
+import { useRef } from "react";
+import CropModal from "../Profile/CropModal";
+import { useCloudinary } from "../../Hook/useCloudinary";
 
 function SideMenu() {
   const [sideMenuData, setSideMenuData] = useState([]);
   const navigate = useNavigate();
   const logout = useLogout();
   const location = useLocation();
+  const [newAvatar, setnewAvatar] = useState("");
+  const [blobFile, setBlobFile] = useState("");
+  const [isCropper, setIsCropper] = useState(false);
+  const inputRef = useRef(null);
+  const cloudinary = useCloudinary();
   const { user } = useSelector((store) => store.user);
 
   useEffect(() => {
@@ -24,6 +33,12 @@ function SideMenu() {
     }
   }, [user]);
 
+  useEffect(() => {
+    if (blobFile) {
+      cloudinary(blobFile, setBlobFile);
+    }
+  }, [blobFile]);
+
   const handleClick = (route) => {
     if (route === "logout") {
       logout();
@@ -32,8 +47,20 @@ function SideMenu() {
     navigate(route);
   };
 
+  const handleButtonClick = () => inputRef.current.click();
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      const blob = URL.createObjectURL(file);
+      setnewAvatar(blob);
+      setIsCropper(true);
+      console.log(blob);
+    }
+  };
+
   const isActive = (path) => location.pathname === path;
-  
 
   return (
     <motion.aside
@@ -43,18 +70,45 @@ function SideMenu() {
       className="w-64  h-[calc(100vh-62px)] bg-white border-r border-gray-200 sticky top-[61px] z-20 shadow-sm"
     >
       {/* Profile */}
-      <div className="flex flex-col items-center text-center py-6 px-4 border-b border-gray-100">
+      <div className="relative flex flex-col items-center text-center py-6 px-4 border-b border-gray-100">
         <img
-          src={user?.avatar || DEFAULT_AVATAR}
+          src={newAvatar ? newAvatar : user?.avatar?.cloudinaryUrl || DEFAULT_AVATAR}
           alt="User Avatar"
           className="w-20 h-20 rounded-full object-cover border border-gray-300 shadow-sm"
         />
+
+        <label className="absolute top-20 left-38">
+          <input
+            ref={inputRef}
+            onChange={handleFileChange}
+            type="file"
+            className="hidden"
+          />
+          <button
+            onClick={handleButtonClick}
+            className="text-lg bg-blue-700 text-white rounded-full cursor-pointer"
+          >
+            <GoPlus />
+          </button>
+        </label>
+
+        {isCropper && (
+          <CropModal
+            blobURL={newAvatar}
+            setBlobURL={setnewAvatar}
+            setBlobFile={setBlobFile}
+            onClose={() => setIsCropper(false)}
+          />
+        )}
+
         {user?.role === "admin" && (
           <span className="text-[10px] font-semibold text-white bg-blue-600 px-2 py-0.5 rounded mt-2">
             Admin
           </span>
         )}
-        <h4 className="mt-2 text-sm font-semibold text-gray-800">{user?.name.capitalize()}</h4>
+        <h4 className="mt-2 text-sm font-semibold text-gray-800">
+          {user?.name.capitalize()}
+        </h4>
         <p className="text-xs text-gray-500">{user?.email}</p>
       </div>
 
