@@ -8,7 +8,7 @@ const Task = require("../models/taskSchema");
 const { default: mongoose } = require("mongoose");
 
 // Route to get all Users
-router.get("/get-all", authMiddleware, adminMiddleware, async (req, res) => {
+router.get("/get-all", authMiddleware, async (req, res) => {
   try {
     // 1. Fetch all users with role 'member' and exclude passwords
     const users = await User.find({ role: "member" }).select("-password");
@@ -60,7 +60,7 @@ router.get("/get-all", authMiddleware, adminMiddleware, async (req, res) => {
 });
 
 // Route to get single User
-router.get("/:id", authMiddleware, adminMiddleware, async (req, res) => {
+router.get("/:id", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -89,9 +89,7 @@ router.get("/:id", authMiddleware, adminMiddleware, async (req, res) => {
   }
 });
 
-router.put("/update/:id", async(req, res) => {
-  
-})
+router.put("/update/:id", async (req, res) => {});
 
 // Route to delete User
 router.delete(

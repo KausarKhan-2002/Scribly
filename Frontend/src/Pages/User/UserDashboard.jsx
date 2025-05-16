@@ -26,8 +26,6 @@ function UserDashboard() {
 
   const onSeeMore = () => navigate("/user/tasks");
 
-
-
   useEffect(() => {
     if (user) {
       dashboard(user.role, setDashboardData, setPieChartData, setBarChartData);

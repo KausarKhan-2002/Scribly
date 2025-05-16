@@ -5,6 +5,8 @@ import {
   LuSquarePlus,
   LuUsers,
 } from "react-icons/lu";
+import { MdOutlineAssignment } from "react-icons/md";
+import { IoPersonAddOutline } from "react-icons/io5";
 
 export const SIDE_MENU_DATA = [
   {
@@ -48,12 +50,30 @@ export const SIDE_MENU_USER_DATA = [
   },
   {
     id: 2,
+    label: "Create Task",
+    icon: LuSquarePlus,
+    path: "/admin/create-task",
+  },
+  {
+    id: 3,
     label: "My Tasks",
     icon: LuClipboardCheck,
     path: "/user/tasks",
   },
   {
+    id: 4,
+    label: "Assigned Tasks",
+    icon: MdOutlineAssignment,
+    path: "/user/tasks/assign",
+  },
+  {
     id: 5,
+    label: "Add Members",
+    icon: IoPersonAddOutline,
+    path: "/connection",
+  },
+  {
+    id: 6,
     label: "Logout",
     icon: LuLogOut,
     path: "logout",

@@ -10,28 +10,88 @@ const router = express.Router();
 // Route to get all tasks (Admin gets all, User gets only assigned)
 router.get("/all", authMiddleware, async (req, res) => {
   try {
-    const { status } = req.query;
-
-    // Create filter object based on query (like status = "Pending")
-    let filter = {};
-    if (status) {
-      filter.status = status;
-    }
-
     let tasks;
 
     // If admin, fetch all tasks and populate assigned user details
     if (req.user.role === "admin") {
-      tasks = await Task.find(filter).populate("assignTo", "name email avatar");
+      tasks = await Task.find().populate("assignTo", "name email avatar");
     } else {
       // If member, fetch only tasks assigned to them
-      tasks = await Task.find({ ...filter, assignTo: req.user.id }).populate(
+      tasks = await Task.find({ createdBy: req.user.id }).populate(
         "assignTo",
         "name email avatar"
       );
     }
 
-    // For each task, calculate how many to-do items are completed
+    // For each task, calculate numbers of to-do items are completed
+    tasks = await Promise.all(
+      tasks.map(async (task) => {
+        const completedToDoCount = task.toDoChecklist.filter(
+          (item) => item.completed
+        ).length;
+        // Add completedToDoCount to each task object
+        return { ...task._doc, completedToDoCount };
+      })
+    );
+
+    // Count total number of tasks (admin: all, user: only their tasks)
+    const allTasks = await Task.countDocuments(
+      req.user.role === "admin" ? {} : { createdBy: req.user._id }
+    );
+
+    // Count Pending tasks (conditionally for user or admin)
+    const pendingTasks = await Task.countDocuments({
+      status: "Pending",
+      ...(req.user.role !== "admin" && { createdBy: req.user._id }),
+    });
+
+    // Count In Progress tasks
+    const inProgressTasks = await Task.countDocuments({
+      status: "In Progress",
+      ...(req.user.role !== "admin" && { createdBy: req.user._id }),
+    });
+
+    // Count Completed tasks
+    const completedTasks = await Task.countDocuments({
+      status: "Completed",
+      ...(req.user.role !== "admin" && { createdBy: req.user._id }),
+    });
+
+    // Send success response with tasks count
+    res.status(200).json({
+      success: true,
+      message: "Fetch all tasks",
+      tasks,
+      statusSummary: {
+        allTasks,
+        pendingTasks,
+        inProgressTasks,
+        completedTasks,
+      },
+    });
+  } catch (err) {
+    // Handle errors centrally
+    catchError(err, res);
+  }
+});
+
+router.get("/all/assigned", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    if (!userId) {
+      res
+        .status(400)
+        .json({ success: false, message: "you are not logged in" });
+    }
+
+    // If admin, fetch all tasks and populate assigned user details
+    let tasks = await Task.find({ assignTo: req.user.id }).populate(
+      "assignTo",
+      "name email avatar"
+    );
+
+    // For each task, calculate numbers of to-do items are completed
     tasks = await Promise.all(
       tasks.map(async (task) => {
         const completedToDoCount = task.toDoChecklist.filter(
@@ -49,21 +109,18 @@ router.get("/all", authMiddleware, async (req, res) => {
 
     // Count Pending tasks (conditionally for user or admin)
     const pendingTasks = await Task.countDocuments({
-      ...filter,
       status: "Pending",
       ...(req.user.role !== "admin" && { assignTo: req.user._id }),
     });
 
     // Count In Progress tasks
     const inProgressTasks = await Task.countDocuments({
-      ...filter,
       status: "In Progress",
       ...(req.user.role !== "admin" && { assignTo: req.user._id }),
     });
 
     // Count Completed tasks
     const completedTasks = await Task.countDocuments({
-      ...filter,
       status: "Completed",
       ...(req.user.role !== "admin" && { assignTo: req.user._id }),
     });
@@ -71,7 +128,7 @@ router.get("/all", authMiddleware, async (req, res) => {
     // Send success response with tasks count
     res.status(200).json({
       success: true,
-      message: "Fetch all tasks",
+      message: "Fetch all assigned tasks",
       tasks,
       statusSummary: {
         allTasks,
@@ -123,7 +180,7 @@ router.get("/:id", authMiddleware, async (req, res) => {
 });
 
 // Route to create a task (Admin only)
-router.post("/create", authMiddleware, adminMiddleware, async (req, res) => {
+router.post("/create", authMiddleware, async (req, res) => {
   try {
     const user = req.user;
 
@@ -225,7 +282,6 @@ router.put("/update/:id", authMiddleware, async (req, res) => {
     task.attachments = attachments || task.attachments;
     task.assignTo = assignTo || task.assignTo;
 
-
     // 5. Save the updated task to the database
     const updatedTask = await task.save();
 
@@ -244,7 +300,6 @@ router.put("/update/:id", authMiddleware, async (req, res) => {
 router.delete(
   "/delete/:id",
   authMiddleware,
-  adminMiddleware,
   async (req, res) => {
     try {
       const { id } = req.params;
@@ -358,7 +413,6 @@ router.put(
       const { toDoChecklist } = req.body;
       const user = req.user;
       // console.log(toDoChecklist);
-      
 
       // 1. Validate the provided task ID
       if (!mongoose.Types.ObjectId.isValid(id)) {

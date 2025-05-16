@@ -26,7 +26,7 @@ function HomeSection02() {
           viewport={{ once: true }}
           className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-800 text-center leading-tight"
         >
-          Empower Your Team with Transparent Task Management
+          Empower <span className="text-blue-500">Your Team</span> with Transparent Task Management
         </motion.h2>
 
         {/* Sections */}

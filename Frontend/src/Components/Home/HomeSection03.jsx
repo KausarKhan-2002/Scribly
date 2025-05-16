@@ -13,7 +13,7 @@ function HomeSection03() {
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-800 leading-tight">
-          Streamline Task Management with Smart Tools
+          Streamline <span className="text-blue-500">Task Management</span> with Smart Tools
         </h2>
         <p className="text-slate-700 mt-4 text-base md:text-lg">
           Organize, assign, and monitor tasks effortlessly with intuitive

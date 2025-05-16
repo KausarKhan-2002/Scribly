@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useLogout } from "../../Hook/useLogout";
@@ -56,23 +56,22 @@ function SideMenu() {
       const blob = URL.createObjectURL(file);
       setnewAvatar(blob);
       setIsCropper(true);
-      console.log(blob);
+      // console.log(blob);
     }
   };
 
   const isActive = (path) => location.pathname === path;
 
   return (
-    <motion.aside
-      // initial={{ x: -100, opacity: 0 }}
-      // animate={{ x: 0, opacity: 1 }}
-      // transition={{ type: "spring", stiffness: 80, damping: 15 }}
-      className="w-64  h-[calc(100vh-62px)] bg-white border-r border-gray-200 sticky top-[61px] z-20 shadow-sm"
-    >
+    <motion.aside className="w-64  h-[calc(100vh-62px)] bg-white border-r border-gray-200 sticky top-[61px] z-20 shadow-sm">
       {/* Profile */}
       <div className="relative flex flex-col items-center text-center py-6 px-4 border-b border-gray-100">
         <img
-          src={newAvatar ? newAvatar : user?.avatar?.cloudinaryUrl || DEFAULT_AVATAR}
+          src={
+            blobFile
+              ? URL.createObjectURL(blobFile)
+              : user?.avatar?.cloudinaryUrl || DEFAULT_AVATAR
+          }
           alt="User Avatar"
           className="w-20 h-20 rounded-full object-cover border border-gray-300 shadow-sm"
         />
@@ -111,7 +110,6 @@ function SideMenu() {
         </h4>
         <p className="text-xs text-gray-500">{user?.email}</p>
       </div>
-
       {/* Menu */}
       <nav className="flex flex-col mt-6 space-y-4  px-4">
         {sideMenuData.map((item) => {
@@ -131,7 +129,7 @@ function SideMenu() {
               {active && (
                 <motion.div
                   layoutId="activeBg"
-                  className="absolute inset-0 bg-blue-100 border-l-4 border-blue-500 z-[-1] rounded-md"
+                  className="absolute inset-0 bg-blue-50 border-l-4 border-blue-500 z-[-1] rounded-md"
                 />
               )}
               <item.icon className="text-lg" />

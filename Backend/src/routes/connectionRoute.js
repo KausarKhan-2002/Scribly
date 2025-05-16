@@ -4,6 +4,7 @@ const { catchError } = require("../helper/catchError");
 const { default: mongoose, connection } = require("mongoose");
 const Connection = require("../models/connectionSchema");
 const User = require("../models/userSchema");
+const { allowedConnections } = require("../helper/constant");
 const router = express.Router();
 
 router.post("/send/:id", authMiddleware, async (req, res) => {
@@ -80,6 +81,57 @@ router.post("/send/:id", authMiddleware, async (req, res) => {
   } catch (err) {
     // Step 6: Handle unexpected errors
     catchError(err, res);
+  }
+});
+
+router.delete("/unsent/:id", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const receiverId = req.params.id;
+
+    // 1. Check login
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "You are not logged in.",
+      });
+    }
+
+    // 2. Validate ObjectId
+    if (!mongoose.Types.ObjectId.isValid(receiverId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Receiver ID is not valid.",
+      });
+    }
+
+    // 3. Find the connection
+    const connection = await Connection.findOne({
+      fromUserId: userId,
+      toUserId: receiverId,
+      status: "pending",
+    });
+
+    if (!connection) {
+      return res.status(404).json({
+        success: false,
+        message: "No pending connection found to unsend.",
+      });
+    }
+
+    // 4. Delete it
+    await Connection.deleteOne({ _id: connection._id });
+
+    return res.status(200).json({
+      success: true,
+      message: "Connection request unsent successfully.",
+    });
+  } catch (err) {
+    console.error("Error unsending connection:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong. Try again.",
+    });
   }
 });
 
@@ -252,7 +304,7 @@ router.get("/connection-requests", authMiddleware, async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Retrieved your all requests successfully",
-      requests: requests,
+      data: requests,
       count: myRequests.length,
     });
   } catch (err) {
@@ -288,7 +340,8 @@ router.get("/outgoing-requests", authMiddleware, async (req, res) => {
     // 4. Format all connections with relevant fields
     const all = connections.map((connection) => ({
       connectionId: connection._id,
-      recieverId: connection.toUserId._id,
+      fromUserId: user._id,
+      toUserId: connection.toUserId._id,
       name: connection.toUserId.name,
       avatar: connection.toUserId.avatar,
       connection: connection.status,
@@ -297,7 +350,7 @@ router.get("/outgoing-requests", authMiddleware, async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Retrieve your all outgoing connections successfully",
-      connections: all,
+      data: all,
       count: connections.length,
     });
   } catch (err) {
@@ -335,7 +388,8 @@ router.get("/outgoing-pending-requests", authMiddleware, async (req, res) => {
     // 6. Format all connections with relevant fields
     const pendingConnections = connections.map((connection) => ({
       connectionId: connection._id,
-      userId: connection.toUserId._id,
+      fromUserId: user._id,
+      toUserId: connection.toUserId._id,
       name: connection.toUserId.name,
       avatar: connection.toUserId.avatar,
       isConnected: connection.isConnected,
@@ -345,7 +399,7 @@ router.get("/outgoing-pending-requests", authMiddleware, async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Retrieved all outgoing pending requests.",
-      pendingConnections,
+      data: pendingConnections,
       count: connections.length,
     });
   } catch (err) {
@@ -402,7 +456,7 @@ router.get("/all-connections", authMiddleware, async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Retrieved all your connections successfully.",
-      connections: allConnections,
+      data: allConnections,
       count: connections.length,
     });
   } catch (err) {
@@ -417,16 +471,13 @@ router.get("/suggestions", authMiddleware, async (req, res) => {
 
     // 1. Find all connections involving current user (sent, received, accepted, etc.)
     const connections = await Connection.find({
-      $or: [
-        { fromUserId: userId },
-        { toUserId: userId }
-      ]
+      $or: [{ fromUserId: userId }, { toUserId: userId }],
     });
 
     // 2. Extract all connected or requested user IDs
     const excludedUserIds = new Set();
-    connections.forEach(conn => {
-      if (conn.status === "accepted" || conn.status === "pending") {
+    connections.forEach((conn) => {
+      if (allowedConnections.includes(conn.status)) {
         excludedUserIds.add(conn.fromUserId.toString());
         excludedUserIds.add(conn.toUserId.toString());
       }
@@ -436,17 +487,22 @@ router.get("/suggestions", authMiddleware, async (req, res) => {
     excludedUserIds.add(userId.toString());
 
     // 3. Suggest users who are NOT in excluded list
-    const suggestions = await User.find({
+    let suggestions = await User.find({
       _id: { $nin: Array.from(excludedUserIds) },
-      role: { $ne: "admin" } // optional
+      role: { $ne: "admin" }, // optional
     }).select("-password -role");
+
+    let suggesstionsPayload = suggestions.map((user) => ({
+      fromUserId: userId,
+      toUserId: user._id,
+      ...user._doc,
+    }));
 
     res.status(200).json({
       success: true,
       message: "Here are your connection suggestions",
-      suggestions,
+      data: suggesstionsPayload,
     });
-
   } catch (error) {
     console.error("Suggestions Error:", error);
     res.status(500).json({
@@ -455,6 +511,5 @@ router.get("/suggestions", authMiddleware, async (req, res) => {
     });
   }
 });
-
 
 module.exports = { connectionRouter: router };

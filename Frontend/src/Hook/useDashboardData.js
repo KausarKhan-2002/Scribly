@@ -7,7 +7,8 @@ export const useDashboardData = () => {
 
   return async (role, setDashboardData, setPieChartData, setBarChartData) => {
     if (!role) return;
-    const { GET_ADMIN_DASHBOARD, GET_USER_DASHBOARD } = API_PATHS.DASHBOARD;
+    const { GET_ADMIN_DASHBOARD, GET_USER_DASHBOARD } =
+      API_PATHS.DASHBOARD;
 
     try {
       const endPoint =

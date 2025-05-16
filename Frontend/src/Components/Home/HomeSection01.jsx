@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 function HomeSection01() {
   return (
-    <div className="mt-17 py-20 min-h-[calc(100vh-65px)] flex justify-center items-center px-6 md:px-10 lg:px-20 relative overflow-hidden">
+    <div className="mt-17 py-20 lg:min-h-[calc(100vh-65px)] flex justify-center items-center px-6 md:px-10 lg:px-20 relative overflow-hidden">
       <section className="w-full md:w-[90%] lg:w-full lg:flex-row flex flex-col-reverse items-center justify-center gap-10 z-10">
         {/* Text Content */}
         <motion.div
@@ -14,7 +14,7 @@ function HomeSection01() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-800 leading-tight">
-            A Smarter Way to Manage Your Tasks
+            A Smarter Way to <span className="text-blue-500">Manage Your</span> Tasks
           </h2>
           <p className="text-slate-700 mt-4 text-base sm:text-lg">
             Our professional dashboard helps you stay on top of every task.

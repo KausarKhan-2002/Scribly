@@ -61,13 +61,13 @@ function Navbar() {
       <nav className="space-x-6 text-gray-700 font-medium text-base">
         <Link
           to="/contact"
-          className="hover:text-blue-600 transition-colors duration-200"
+          className="hover:text-blue-600 transition-colors duration-200 font-bold text-gray-700"
         >
           Contact Us
         </Link>
         <Link
           to="/auth"
-          className="hover:text-blue-600 transition-colors duration-200"
+          className="hover:text-blue-600 transition-colors duration-200 font-bold text-gray-700"
         >
           Log In
         </Link>

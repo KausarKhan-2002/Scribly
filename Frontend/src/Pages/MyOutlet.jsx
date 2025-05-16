@@ -11,6 +11,7 @@ import UserDashboard from "./User/UserDashboard";
 import MyTasks from "./User/MyTasks";
 import ViewTaskDetails from "./User/ViewTaskDetails";
 import { useSelector } from "react-redux";
+import Connections from "./Connections/Connections";
 
 function MyOutlet() {
   return (
@@ -30,8 +31,10 @@ function MyOutlet() {
       {/* *********** User routes *********** */}
       <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
         <Route path="/user/dashboard" element={<UserDashboard />} />
-        <Route path="/user/tasks" element={<MyTasks />} />
+        <Route path="/user/tasks" element={<MyTasks isAllTasks={true} />} />
+        <Route path="/user/tasks/assign" element={<MyTasks isAllTasks={false} />} />
         <Route path="/user/task-details/:id" element={<ViewTaskDetails />} />
+        <Route path="/connection" element={<Connections />}  />
       </Route>
 
       <Route path="/" element={<Root />} />

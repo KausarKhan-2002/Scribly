@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { useAllUsers } from "../../Hook/useAllUsers";
 import { LuUsers } from "react-icons/lu";
 import Modal from "../Modal";
 import { DEFAULT_AVATAR } from "../../Utils/constants";
 import AvatarGroup from "../AvatarGroup";
+import { API_PATHS, BASE_URL } from "../../Utils/apiPaths";
+import axios from "axios";
 
 function SelectUsers({ selectedUsers, setSelectedUsers, value }) {
   const [allUsers, setAllUsers] = useState([]);
   const [isModelOpen, setIsModelOpen] = useState(false);
   const [tempSelectedUser, setTempSelectedUser] = useState([]);
-  const users = useAllUsers();
 
   // console.log("All Users: ", allUsers);
 
@@ -33,8 +33,23 @@ function SelectUsers({ selectedUsers, setSelectedUsers, value }) {
     .filter((user) => selectedUsers.includes(user._id))
     .map((user) => user.avatar?.cloudinaryUrl || DEFAULT_AVATAR);
 
+  // Get connections to assign task
+  const getConnections = async () => {
+    try {
+      const { CONNECTIONS } = API_PATHS.CONNECTIONS;
+
+      const response = await axios.get(BASE_URL + CONNECTIONS, {
+        withCredentials: true,
+      });
+      // console.log(response);
+      setAllUsers(response.data?.data || []);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
   useEffect(() => {
-    users(setAllUsers);
+    getConnections();
   }, []);
 
   // Temporary selected users
@@ -70,10 +85,10 @@ function SelectUsers({ selectedUsers, setSelectedUsers, value }) {
         title="Select Users"
       >
         {/* Modal body */}
-        <div className="space-y-4 h-[60vh] overflow-y-auto">
+        <div className="space-y-4 h-[60vh] overflow-y-auto custom-scrollbar">
           {allUsers.map((user) => (
             <div
-              key={user._id}
+              key={user.connectionId}
               className="flex items-center gap-4 border-b border-gray-200 py-2"
             >
               <img

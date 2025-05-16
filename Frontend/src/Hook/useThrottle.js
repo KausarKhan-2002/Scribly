@@ -2,7 +2,7 @@ import { useRef } from "react";
 
 export const useThrottle = () => {
   const lastCallRef = useRef(0); // persists across renders
-
+  
   return (cb, delay) => {
     const now = new Date().getTime();
     const timeSinceLastCall = now - lastCallRef.current;

@@ -24,7 +24,7 @@ export const useProfile = () => {
       //   console.log(response);
       const user = response.data.user;
       dispatch(addUser(user));
-      console.log(user);
+      // console.log(user);
 
       if (!localStorage.getItem("auth_token")) {
         localStorage.setItem("auth_token", response.data.token);

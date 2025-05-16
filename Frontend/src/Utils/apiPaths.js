@@ -3,7 +3,6 @@ const isLocal = false;
 export const BASE_URL = isLocal
   ? "http://localhost:7000"
   : "https://scribly-backend.onrender.com";
-  
 
 export const API_PATHS = {
   AUTH: {
@@ -24,7 +23,8 @@ export const API_PATHS = {
   },
   TASK: {
     GET_TASKS: "/task/all", // Get all tasks (admin sees all, user sees their own tasks) (requires JWT)
-    GET_TASK: (taskId) => `/task/${taskId}`, // Get a specific task by ID (requires JWT)
+    GET_ASSIGNED_TASKS: "/task/all/assigned",
+    GET_TASK: (taskId) => `/task/${taskId}`,
     CREATE_TASK: "/task/create", // Create a new task (admin only) (requires JWT)
     UPDATE_TASK: (taskId) => `/task/update/${taskId}`, // Update a task's details (admin or assignee) (requires JWT)
     DELETE_TASK: (taskId) => `/task/delete/${taskId}`, // Delete a task (admin only) (requires JWT)
@@ -34,10 +34,22 @@ export const API_PATHS = {
   },
   DASHBOARD: {
     GET_ADMIN_DASHBOARD: "/dashboard/admin", // Admin dashboard data summary (requires JWT + admin role)
-    GET_USER_DASHBOARD: "/dashboard/user", // Logged-in user's dashboard summary (requires JWT)
+    GET_USER_ASSIGN_DASHBOARD: "/dashboard/user/assign", // Logged-in user's dashboard summary (requires JWT)
+    GET_USER_DASHBOARD: "/dashboard/user",
   },
   REPORTS: {
     EXPORT_TASKS: "/reports/export/tasks", // Admin: Export all tasks to Excel (requires JWT + admin role)
     EXPORT_USERS: "/reports/export/users", // Admin: Export task summary per user to Excel (requires JWT + admin role)
+  },
+  CONNECTIONS: {
+    SUGGEST_MEMBERS: "/connection/suggestions",
+    CONNECTIONS: "/connection/all-connections",
+    REQUESTS: "/connection/connection-requests",
+    SENT_REQUESTS: "/connection/outgoing-requests",
+    SENT_PENDING_REQUESTS: "/connection/outgoing-pending-requests",
+    SEND_REQUEST: (userId) => `/connection/send/${userId}`,
+    UNSENT_REQUEST: (userId) => `/connection/unsent/${userId}`,
+    ACCEPT_REQUEST: (userId) => `/connection/accept/${userId}`,
+    REJECT_REQUEST: (userId) => `/connection/reject/${userId}`,
   },
 };

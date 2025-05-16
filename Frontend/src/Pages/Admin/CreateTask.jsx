@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import DashboardLayout from "../../Components/Layouts/DashboardLayout";
 import { PRIORITY_DATA } from "../../Utils/constants";
 import { API_PATHS, BASE_URL } from "../../Utils/apiPaths";
@@ -13,11 +13,12 @@ import { usetaskValidator } from "../../Hook/useValidator";
 import { useCreateTask } from "../../Hook/useCreateTask";
 import Spinner from "../../Shared/Spinner";
 import axios from "axios";
-import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import useThrottle from "../../Hook/useThrottle";
 import Modal from "../../Components/Modal";
 import DeleteAlert from "../../Components/DeleteAlert";
+import { useDeleteTask } from "../../Hook/useDeleteTask";
+import { useTaskByID } from "../../Hook/useTaskByID";
 
 function CreateTask() {
   const [taskData, setTaskData] = useState({
@@ -34,7 +35,6 @@ function CreateTask() {
   const [currTask, setCurrTask] = useState(null);
   const location = useLocation();
   const { taskId } = location.state || {};
-  const navigate = useNavigate();
   const taskValidator = usetaskValidator();
   const createTask = useCreateTask();
   const throttle = useThrottle();
@@ -91,55 +91,10 @@ function CreateTask() {
   };
 
   // Get task by ID
-  const getTaskByID = async (taskId) => {
-    try {
-      const { GET_TASK } = API_PATHS.TASK;
-      const response = await axios.get(BASE_URL + GET_TASK(taskId), {
-        withCredentials: true,
-      });
-      // console.log(response);
-      if (response.data.task) {
-        const taskInfo = response.data.task;
-
-        setCurrTask(taskInfo);
-
-        setTaskData((prev) => ({
-          title: taskInfo.title,
-          description: taskInfo.description,
-          priority: taskInfo.priority,
-          dueDate: taskInfo.dueDate
-            ? moment(taskInfo.dueDate).format("YYYY-MM-DD")
-            : "",
-          assignTo: taskInfo.assignTo.map((item) => item?._id) || [],
-          toDoChecklist: taskInfo.toDoChecklist.map((item) => item?.text) || [],
-          attachments: taskInfo.attachments || [],
-        }));
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  const getTaskByID = useTaskByID();
 
   // Delete task
-  const deleteTask = async () => {
-    try {
-      setLoading(true)
-      const { DELETE_TASK } = API_PATHS.TASK;
-      // console.log(currTask)
-      await axios.delete(
-        BASE_URL + DELETE_TASK(currTask._id),
-        { withCredentials: true }
-      );
-      // console.log(response);
-      navigate("/admin/tasks");
-      toast.success("Task deleted successfully")
-    } catch (err) {
-      console.log(err.message);
-    } finally {
-      setOpenDeleteAlert(false);
-      setLoading(false)
-    }
-  };
+  const deleteTask = useDeleteTask();
 
   const handleSubmit = () => {
     console.log("taskData:", taskData);
@@ -157,7 +112,7 @@ function CreateTask() {
   useEffect(() => {
     // Get task by ID and set to taskData
     if (taskId) {
-      getTaskByID(taskId);
+      getTaskByID(setCurrTask, setTaskData, taskId);
     }
   }, [taskId]);
 
@@ -312,7 +267,9 @@ function CreateTask() {
         >
           <DeleteAlert
             content="Are you sure you want to delete this task ?"
-            onDelete={() => deleteTask()}
+            onDelete={() =>
+              deleteTask(setLoading, setOpenDeleteAlert, currTask)
+            }
             onClose={() => setOpenDeleteAlert(false)}
             onLoading={loading}
           />

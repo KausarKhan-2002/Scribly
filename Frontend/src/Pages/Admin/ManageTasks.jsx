@@ -54,7 +54,7 @@ function ManageTasks() {
   // Set useLocation state with current taskId when user click on card
   const handleClick = (taskData) => {
     navigate(`/admin/create-task`, { state: { taskId: taskData._id } });
-    console.log(taskData);
+    // console.log(taskData);
   };
 
   useEffect(() => {

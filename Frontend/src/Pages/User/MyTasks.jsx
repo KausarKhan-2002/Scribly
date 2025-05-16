@@ -1,71 +1,32 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import DashboardLayout from "../../Components/Layouts/DashboardLayout";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { API_PATHS, BASE_URL } from "../../Utils/apiPaths";
 import TaskStatusTabs from "../../Components/TaskStatusTabs";
 import TaskCard from "../../Components/Cards/TaskCard";
-import { useDispatch } from "react-redux";
-import { replaceTask } from "../../Store/tasksSlice";
 import { DEFAULT_AVATAR } from "../../Utils/constants";
+import { useTasks } from "../../Hook/useTasks";
 
-function MyTasks() {
+function MyTasks({ isAllTasks }) {
   const [allTasks, setAllTasks] = useState([]);
   const [tabs, setTabs] = useState([]);
   const [filterTasks, setFilterTasks] = useState([]);
   const [isData, setIsData] = useState(false);
   const [activeTab, setActiveTab] = useState("All");
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  // const downloadReport = useDownloadReport();
-
-  // const totalTasks = filterTasks.length ? filterTasks : allTasks;
-
-  const getAllTasks = async () => {
-    try {
-      const { GET_TASKS } = API_PATHS.TASK;
-      // console.log(BASE_URL + GET_TASKS);
-
-      const response = await axios.get(BASE_URL + GET_TASKS, {
-        withCredentials: true,
-      });
-      // console.log(response);
-      setAllTasks(response.data?.tasks || []);
-      setIsData(response.data?.tasks ? true : false);
-      setFilterTasks(response.data?.tasks || []);
-      dispatch(replaceTask(response.data?.tasks || []));
-
-      const statusSummary = response.data?.statusSummary || {};
-
-      // Map statusSummary data woth fixed label and order
-      const statusArr = [
-        { label: "All", count: statusSummary?.allTasks || 0 },
-        { label: "Pending", count: statusSummary?.pendingTasks || 0 },
-        { label: "In Progress", count: statusSummary?.inProgressTasks || 0 },
-        { label: "Completed", count: statusSummary?.completedTasks || 0 },
-      ];
-      setTabs(statusArr);
-    } catch (err) {
-      console.log(err.message);
-    }
-  };
-
-  // console.log(allTasks);
+  const getAllTasks = useTasks();
 
   // Set useLocation state with current taskId when user click on card
   const handleClick = (taskId) => {
-    navigate(`/user/task-details/${taskId}`);
+    isAllTasks
+      ? navigate("/admin/create-task", { state: { taskId } })
+      : navigate(`/user/task-details/${taskId}`);
   };
 
   useEffect(() => {
-    getAllTasks();
-  }, []);
+    getAllTasks(setAllTasks, setIsData, setFilterTasks, setTabs, isAllTasks);
+  }, [isAllTasks]);
 
-  // console.log(allTasks);
-  // console.log("filterTasks:", filterTasks);
-
-  // if (allTasks.length === 0) return
-  console.log(tabs, activeTab);
+  // console.log(tabs, activeTab);
 
   return (
     <DashboardLayout activeMenu="Manage Tasks">
@@ -98,7 +59,9 @@ function MyTasks() {
               <TaskCard
                 key={task._id}
                 task={task}
-                assignedTo={task.assignTo?.map((item) => item.avatar?.cloudinaryUrl || DEFAULT_AVATAR)}
+                assignedTo={task.assignTo?.map(
+                  (item) => item.avatar?.cloudinaryUrl || DEFAULT_AVATAR
+                )}
                 onClick={() => handleClick(task._id)}
               />
             ))}
