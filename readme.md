@@ -1,6 +1,12 @@
-<h1 align="center">📝 Scribly - Your Smart Notes & Task Dashboard</h1>
+<h1 align="center">📓 Scribly - Your Smart Notes & Task Dashboard</h1>
 
 <p align="center"><i>Write. Organize. Own your productivity — with Scribly.</i></p>
+
+<p align="center">
+  <a href="https://scribly-azure.vercel.app" target="_blank">
+    🔗 <strong>Live Demo</strong>
+  </a>
+</p>
 
 ---
 
@@ -13,38 +19,25 @@
 
 ---
 
-## 🧩 Tech Stack Overview
+## 🌟 UI Previews
 
-### 🎨 Frontend – `client/`
+### 🏠 Home Page  
+![Home Page](./Assets/home.png)
 
-> Built with performance, responsiveness, and animation in mind.
+### 🏠 Dashboard Overview  
+![Dashboard Preview](./Assets/dashboard.png)
 
-| Technology         | Purpose                                      |
-|--------------------|----------------------------------------------|
-| **React.js**       | Component-based UI                           |
-| **Tailwind CSS**   | Utility-first responsive styling             |
-| **Framer Motion**  | Smooth animations & transitions              |
-| **Axios**          | HTTP requests to backend                     |
-| **React Router**   | Page routing and navigation                  |
-| **Dark Mode**      | Theme toggle with modern UI                  |
-| **Drag & Drop API**| Task reordering experience                   |
-| **Form Validation**| Real-time error feedback in forms            |
+### 🔐 Create Task  
+![Auth Screens](./Assets/createTask.png)
 
----
+### 📋 Task Management  
+![Task Feature](./Assets/myTasks.png)
 
-### 🔧 Backend – `server/`
+### 📝 Suggestions  
+![Note Editing](./Assets/suggestions.png)
 
-> Focused on security, performance, and scalability.
-
-| Technology            | Purpose                                       |
-|------------------------|-----------------------------------------------|
-| **Node.js + Express**  | Server and routing logic                      |
-| **MongoDB + Mongoose** | Database and schema modeling                  |
-| **JWT Auth**           | Secured authentication using tokens           |
-| **Bcrypt.js**          | Password hashing                              |
-| **Cookie-parser**      | Session management using HTTP-only cookies    |
-| **CORS**               | Secure cross-origin requests                  |
-| **Express Middleware** | Route protection and error handling           |
+### 🤝 Admin Assigned Tasks  
+![User Connections](./Assets/assignTo.png)
 
 ---
 
@@ -64,6 +57,41 @@ Scribly includes a **social connection system** that enables users to connect, e
 - 🔁 All statuses are **dynamic** and update in real-time.
 - 🎞️ Smooth transitions and state changes powered by **Framer Motion**.
 - ✨ Beautiful **shimmer loading UI** for seamless user experience during data fetch.
+
+---
+
+## 🧩 Tech Stack Overview
+
+### 🎨 Frontend – `client/`
+
+> Built with performance, responsiveness, and animation in mind.
+
+| Technology          | Purpose                           |
+| ------------------- | --------------------------------- |
+| **React.js**        | Component-based UI                |
+| **Tailwind CSS**    | Utility-first responsive styling  |
+| **Framer Motion**   | Smooth animations & transitions   |
+| **Axios**           | HTTP requests to backend          |
+| **React Router**    | Page routing and navigation       |
+| **Dark Mode**       | Theme toggle with modern UI       |
+| **Drag & Drop API** | Task reordering experience        |
+| **Form Validation** | Real-time error feedback in forms |
+
+---
+
+### 🔧 Backend – `server/`
+
+> Focused on security, performance, and scalability.
+
+| Technology             | Purpose                                    |
+| ---------------------- | ------------------------------------------ |
+| **Node.js + Express**  | Server and routing logic                   |
+| **MongoDB + Mongoose** | Database and schema modeling               |
+| **JWT Auth**           | Secured authentication using tokens        |
+| **Bcrypt.js**          | Password hashing                           |
+| **Cookie-parser**      | Session management using HTTP-only cookies |
+| **CORS**               | Secure cross-origin requests               |
+| **Express Middleware** | Route protection and error handling        |
 
 ---
 

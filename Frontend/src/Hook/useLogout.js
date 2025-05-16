@@ -16,7 +16,7 @@ export const useLogout = () => {
         {},
         { withCredentials: true }
       );
-      navigate("/auth");
+      navigate("/home");
       localStorage.removeItem("auth_token");
       dispatch(removeUser());
     } catch (err) {
