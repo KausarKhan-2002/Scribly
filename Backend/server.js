@@ -29,10 +29,10 @@ app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin || allowedOrigins.includes(origin)) {
-        return callback(null, true)
+        return callback(null, true);
       }
 
-      callback(new Error("Not allowed by cors"))
+      callback(new Error("Not allowed by cors"));
     },
     methods: ["POST", "GET", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["content-type", "Authorization"],
@@ -66,6 +66,8 @@ mongoose
   });
 
 // My routes starts here
+
+app.get("/", (req, res) => res.status(200).json({ message: "Hello world" }));
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/profile", profileRouter);
