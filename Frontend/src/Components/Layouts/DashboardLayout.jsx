@@ -18,7 +18,7 @@ function DashboardLayout({ children, activeMenu }) {
           </div>
 
           {/* Dashboard layout children */}
-          <div className="grow mx-5">{children}</div>
+          <div className="grow">{children}</div>
         </div>
       )}
     </div>

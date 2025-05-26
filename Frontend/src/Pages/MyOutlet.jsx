@@ -12,6 +12,7 @@ import MyTasks from "./User/MyTasks";
 import ViewTaskDetails from "./User/ViewTaskDetails";
 import { useSelector } from "react-redux";
 import Connections from "./Connections/Connections";
+import Conversation from "./Conversation/Conversation";
 
 function MyOutlet() {
   return (
@@ -35,6 +36,7 @@ function MyOutlet() {
         <Route path="/user/tasks/assign" element={<MyTasks isAllTasks={false} />} />
         <Route path="/user/task-details/:id" element={<ViewTaskDetails />} />
         <Route path="/connection" element={<Connections />}  />
+        <Route path="/conversation" element={<Conversation />} />
       </Route>
 
       <Route path="/" element={<Root />} />

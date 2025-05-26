@@ -7,6 +7,7 @@ import {
 } from "react-icons/lu";
 import { MdOutlineAssignment } from "react-icons/md";
 import { IoPersonAddOutline } from "react-icons/io5";
+import { BsChatLeftDots } from "react-icons/bs";
 
 export const SIDE_MENU_DATA = [
   {
@@ -68,12 +69,18 @@ export const SIDE_MENU_USER_DATA = [
   },
   {
     id: 5,
+    label: "Conversation",
+    icon: BsChatLeftDots,
+    path: "/conversation",
+  },
+  {
+    id: 6,
     label: "Add Members",
     icon: IoPersonAddOutline,
     path: "/connection",
   },
   {
-    id: 6,
+    id: 7,
     label: "Logout",
     icon: LuLogOut,
     path: "logout",

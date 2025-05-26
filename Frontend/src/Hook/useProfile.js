@@ -31,6 +31,7 @@ export const useProfile = () => {
       }
     } catch (err) {
       console.log(err);
+      navigate("/auth");
     } finally {
       dispatch(setLoading(false));
     }

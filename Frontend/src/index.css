@@ -75,3 +75,27 @@ html {
 .scrollbar-none {
   scrollbar-width: none;
 }
+
+
+/* Thin Scrollbar */
+
+/* For WebKit browsers (Chrome, Safari, Edge) */
+.thin-scrollbar::-webkit-scrollbar {
+    width: 4px;  /* makes the scrollbar ultra thin */
+    height: 4px; /* for horizontal scrollbars */
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+    background: transparent; /* makes the track invisible */
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #d3d3d3; /* light gray color */
+    border-radius: 2px; /* optional: rounds the corners slightly */
+}
+
+/* For Firefox */
+.thin-scrollbar {
+    scrollbar-width: thin; /* makes scrollbar thin */
+    scrollbar-color: #d3d3d3 transparent; /* light gray thumb, transparent track */
+}

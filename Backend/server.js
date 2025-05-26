@@ -12,6 +12,7 @@ const { profileRouter } = require("./src/routes/profileRoute");
 const { dashBoardRouter } = require("./src/routes/dashboardRoute");
 const { cloudinaryConfig } = require("./src/config/cloudinary");
 const { connectionRouter } = require("./src/routes/connectionRoute");
+const { conversationRoute } = require("./src/routes/conversationRoute");
 
 dotenv.config();
 const app = express();
@@ -75,3 +76,4 @@ app.use("/task", taskRouter);
 app.use("/dashboard", dashBoardRouter);
 app.use("/reports", reportRouter);
 app.use("/connection", connectionRouter);
+app.use("/conversation", conversationRoute);

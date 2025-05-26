@@ -18,7 +18,7 @@ function App() {
   startCustomProto();
 
   return (
-    <div className="bg-gray-100/50">
+    <div className="bg-gray-100/50 thin-scrollbar">
       {profile.loading && <LoadingProfile />}
       <Toaster />
       <MyOutlet />
