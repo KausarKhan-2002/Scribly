@@ -2,15 +2,24 @@ import { motion } from "framer-motion";
 import { DEFAULT_AVATAR } from "../../Utils/constants";
 import { Bell } from "lucide-react"; // Optional: for notification icon
 import { VscClose } from "react-icons/vsc";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import { GoArrowLeft } from "react-icons/go";
+import { useAllMessages } from "../../Hook/useAllMessages";
+import { useSocket } from "../../Context/SocketProvider";
 
 function UserPanel({ connections, setSelectedUser }) {
   const [search, setSearch] = useState("");
   const [isSearch, setIsSearch] = useState(false);
+  const allMessages = useAllMessages();
+  const {onlineUserIds} = useSocket()
+
+  // console.log(onlineUserIds);
+  
 
   const handleClick = (connection) => {
+    if (!connection.userId) return;
+    allMessages(connection.userId);
     setSelectedUser(connection);
   };
 
@@ -32,7 +41,7 @@ function UserPanel({ connections, setSelectedUser }) {
         connections.map((connection) => (
           <motion.div
             key={connection.connectionId}
-            className="flex items-center justify-between bg-white p-4 rounded-xl border border-slate-100 hover:shadow-sm transition duration-300 cursor-pointer"
+            className="relative flex items-center justify-between bg-white p-4 rounded-xl border border-slate-100 hover:shadow-sm transition duration-300 cursor-pointer"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
@@ -45,6 +54,9 @@ function UserPanel({ connections, setSelectedUser }) {
               className="w-12 h-12 rounded-full object-cover cursor-pointer"
               whileHover={{ scale: 1.1 }}
             />
+
+            {/* Online */}
+            <div className="absolute bottom-4 left-13 bg-emerald-500 w-3 h-3 border border-white rounded-full" />
 
             {/* Center - Name & Timestamp */}
             <div className="flex-1 ml-4">

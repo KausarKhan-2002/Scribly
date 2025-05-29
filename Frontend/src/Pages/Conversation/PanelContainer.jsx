@@ -47,7 +47,13 @@ const PanelContainer = () => {
         <ChatPanel selectedUser={selectedUser} />
       </div>
 
-      <div className={`md:w-[65%] h-full ${selectedUser ? "hidden" : "block"}`}>Let's chats</div>
+      <div
+        className={`hidden md:block md:w-[65%] h-full ${
+          selectedUser ? "hidden" : "block"
+        }`}
+      >
+        Let's chats
+      </div>
     </div>
   );
 };

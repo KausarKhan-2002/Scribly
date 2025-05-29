@@ -1,28 +1,47 @@
 import { IoMdSend } from "react-icons/io";
 import { motion } from "framer-motion";
 import { DEFAULT_AVATAR } from "../../Utils/constants";
-
-const chating = [
-  {
-    senderId: "68260d373cfc9dd9b064ddc1",
-    recieverId: "683404ba94754d8ab8702e5e",
-    message: "hii",
-  },
-  {
-    senderId: "68260d373cfc9dd9b064ddc1",
-    recieverId: "683404ba94754d8ab8702e5e",
-    message: "kaise ho bro",
-  },
-  {
-    senderId: "683404ba94754d8ab8702e5e",
-    recieverId: "68260d373cfc9dd9b064ddc1",
-    message: "Mai thik hu bhai apna sunao",
-  },
-];
+import { useEffect, useRef, useState } from "react";
+import { useSendMsg } from "../../Hook/useSendMsg";
+import { useDispatch, useSelector } from "react-redux";
+import { addMsg } from "../../Store/getMsgsSlice";
 
 function ChatPanel({ selectedUser }) {
+  const [message, setMessage] = useState("");
+  const profile = useSelector((store) => store.user);
+  const allMessages = useSelector((store) => store.messages);
+  const sendMsg = useSendMsg();
+  const dispatch = useDispatch();
+  const lastMsgRef = useRef();
+  //   console.log(profile);
+
+  const handleSendMsg = (e) => {
+    e.preventDefault();
+
+    if (profile.user?._id && selectedUser?.userId) {
+      const newMsg = {
+        senderId: profile?.user?._id,
+        receiverId: selectedUser.userId,
+        message,
+      };
+
+      dispatch(addMsg(newMsg));
+      sendMsg(newMsg, message);
+    }
+    setMessage("");
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (lastMsgRef.current) {
+        lastMsgRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 100);
+  }, [allMessages]);
+
   if (!selectedUser) return null;
-  console.log(selectedUser);
+  // console.log(selectedUser);
+  console.log(allMessages);
 
   const { name, avatar } = selectedUser;
 
@@ -51,43 +70,55 @@ function ChatPanel({ selectedUser }) {
         {/* Message bubbles would go here */}
 
         <div className="px-4 py-2 space-y-3">
-          {chating.map((msg, ind) => {
-            const isSender = msg.recieverId === selectedUser.userId;
+          {allMessages &&
+            allMessages.map((msg, ind) => {
+              const isSender = msg.receiverId === selectedUser.userId;
 
-            return (
-              <div
-                key={ind}
-                className={`flex ${isSender ? "justify-end" : "justify-start"}`}
-              >
-                <div
-                  className={`min-w-[25%] max-w-[50%] px-4 py-2 rounded-lg shadow-sm text-sm whitespace-pre-wrap break-words ${
-                    isSender
-                      ? "bg-indigo-100 text-gray-800 rounded-br-none"
-                      : "bg-white text-gray-900 rounded-bl-none"
+              return (
+                <motion.div
+                  key={ind}
+                  className={`flex ${
+                    isSender ? "justify-end" : "justify-start"
                   }`}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2 }}
+                  ref={lastMsgRef}
                 >
-                  <p>{msg.message}</p>
-                  <p className="text-[10px] text-gray-500 mt-1 text-right">
-                    11:02 am
-                  </p>
-                </div>
-              </div>
-            );
-          })}
+                  <div
+                    className={`min-w-[25%] max-w-[50%] px-4 py-2 rounded-lg shadow-sm text-sm whitespace-pre-wrap break-words ${
+                      isSender
+                        ? "bg-indigo-100 text-gray-800 rounded-br-none"
+                        : "bg-white text-gray-900 rounded-bl-none"
+                    }`}
+                  >
+                    <p>{msg.message}</p>
+                    <p className="text-[10px] text-gray-500 mt-1 text-right">
+                      11:02 am
+                    </p>
+                  </div>
+                </motion.div>
+              );
+            })}
         </div>
       </div>
 
       {/* Input */}
-      <div className="p-3 bg-white flex items-center gap-2">
+      <form
+        onSubmit={handleSendMsg}
+        className="p-3 bg-white flex items-center gap-2"
+      >
         <input
           type="text"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
           placeholder="Type your message..."
-          className="flex-1 px-4 py-2 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-400 text-sm"
+          className="flex-1 px-4 py-2 rounded-full bg-gray-100 outline-none text-sm"
         />
         <button className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-full transition">
           <IoMdSend className="text-lg" />
         </button>
-      </div>
+      </form>
     </motion.div>
   );
 }

@@ -13,9 +13,10 @@ const { dashBoardRouter } = require("./src/routes/dashboardRoute");
 const { cloudinaryConfig } = require("./src/config/cloudinary");
 const { connectionRouter } = require("./src/routes/connectionRoute");
 const { conversationRoute } = require("./src/routes/conversationRoute");
+const { app, server } = require("./socket");
 
 dotenv.config();
-const app = express();
+// const app = express();
 
 cloudinaryConfig();
 
@@ -56,7 +57,7 @@ mongoose
     console.log("MongoDB connected successfully.");
 
     // Once MongoDB is connected, start the server
-    app.listen(process.env.PORT || 5000, () => {
+    server.listen(process.env.PORT || 5000, () => {
       console.log(`Server is running on port ${process.env.PORT || 5000}`);
     });
   })

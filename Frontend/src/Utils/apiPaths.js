@@ -1,5 +1,5 @@
 // Base URL of your backend server
-const isLocal = true;
+const isLocal = false;
 export const BASE_URL = isLocal
   ? "http://localhost:7000"
   : "https://scribly-backend.onrender.com";
@@ -51,5 +51,9 @@ export const API_PATHS = {
     UNSENT_REQUEST: (userId) => `/connection/unsent/${userId}`,
     ACCEPT_REQUEST: (userId) => `/connection/accept/${userId}`,
     REJECT_REQUEST: (userId) => `/connection/reject/${userId}`,
+  },
+  CONVERSATION: {
+    SEND_MSG: "/conversation/send",
+    GET_MSGS: (otherId) => `/conversation/all/${otherId}`,
   },
 };
